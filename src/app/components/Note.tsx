@@ -19,7 +19,7 @@ export default function Note(props : NoteProps) {
         value={props.note.title}
         onChange={(e) => props.handleTitleChange(props.note.id, e.target.value, 'note')}
       />:
-      <input
+      <textarea
         value={props.note.content}
         onChange={(e) => props.handleContentChange(props.note.id, e.target.value, 'note')}
       />

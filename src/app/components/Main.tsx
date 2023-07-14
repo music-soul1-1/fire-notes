@@ -2,7 +2,7 @@ import {
   getAllNotes, getAllTodos, note, todo, 
   addTodo, addNote, updateNoteContent, updateNoteTitle, 
   subscribeToNotesChanges, subscribeToTodosChanges, loadUid,
-  updateTodoDescription, updateTodoTitle, deleteDocument, addTag, 
+  updateTodoSubtask, updateTodoTitle, deleteDocument, addTag, 
   updateTag, removeTag
 } from "../FirebaseHandler";
 import React, { useEffect, useState } from "react";
@@ -59,13 +59,13 @@ export default function Main() : JSX.Element {
         if (todo.id == id) {
           return { 
             ...todo,
-            description: todo.description.map((desc, i) => (i === index ? value : desc)) 
+            subtask: todo.subtask.map((desc, i) => (i === index ? value : desc)) 
           };
         }
         return todo;
       }));
   
-      await updateTodoDescription(id, index, value);
+      await updateTodoSubtask(id, index, value);
     }
   };
 
@@ -136,13 +136,10 @@ export default function Main() : JSX.Element {
     const aUpdatedAt = a.updatedAt.toMillis();
     return bUpdatedAt - aUpdatedAt;
   });
-  
-  
+
 
   return (
-    <div className={styles.main}>
-      <p>Notes:</p>
-      
+    <div className={styles.main}>      
       {sortedArray.map((item) => {
       if ('content' in item) {
         return (

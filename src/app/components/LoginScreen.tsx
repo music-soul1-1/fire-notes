@@ -1,15 +1,11 @@
-import React, {useState} from "react";
+import React from "react";
 import { signInWithGoogle } from "../FirebaseHandler";
 import styles from '../page.module.css';
 import Image from "next/image";
 
 export default function LoginScreen() : JSX.Element {
-  const [uidFound, setUidFound] = useState<boolean>(false);
-
   async function handleUid() {
     await signInWithGoogle();
-
-    setUidFound(!uidFound);
   }
   
   return (

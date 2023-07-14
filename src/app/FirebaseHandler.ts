@@ -18,12 +18,13 @@ export type note = {
 export type todo = {
   id: string;
   title: string;
-  description: string[];
+  subtask: string[];
   tags: string[];
   completed: boolean[];
   completedAt: Timestamp[];
   createdAt:Timestamp;
   updatedAt: Timestamp;
+  subtaskUpdatedAt: Timestamp[];
 };
 
 const firebaseConfig = {
@@ -158,12 +159,13 @@ export async function getAllTodos() {
     const todoData: todo = {
       id: doc.id,
       title: data.title,
-      description: data.description,
+      subtask: data.subtask,
       tags: data.tags,
       completed: data.completed,
       completedAt: data.completedAt,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
+      subtaskUpdatedAt: data.subtaskUpdatedAt
     };
     return todoData;
   });
@@ -260,32 +262,39 @@ export async function removeTag(id: string, index: number, type: 'note' | 'todo'
   }
 }
 
-export async function addTodo(title: string, description: string[]) {
+export async function addTodo(title: string, subtask: string[]) {
   if (!uid) {
     uid = localStorage.getItem("uid") ?? ' ';
   }
 
-  const specialDateArr : Timestamp[] = Array(description.length).fill(Timestamp.fromDate(new Date(1, 0, 1)));
+  const currentDateArr : Timestamp[] = Array(subtask.length).fill(Timestamp.fromDate(new Date()));
+  const specialDateArr : Timestamp[] = Array(subtask.length).fill(Timestamp.fromDate(new Date(1, 0, 1)));
 
   await setDoc(doc(collection(db, "users", uid, "todos")), <todo>{
     title: title,
-    description: description,
-    completed: Array(description.length).fill(false),
+    subtask: subtask,
+    completed: Array(subtask.length).fill(false),
     completedAt: specialDateArr, 
     createdAt: Timestamp.fromDate(new Date()),
     updatedAt: Timestamp.fromDate(new Date()),
+    subtaskUpdatedAt: currentDateArr
   });
 };
 
-export async function updateTodoDescription(id: string, index: number, value: string) {
+export async function updateTodoSubtask(id: string, index: number, value: string) {
   if (uid) {
     const docRef = doc(db, "users", uid, "todos", id);
     const todoDoc = await getDoc(docRef);
     const todoData = todoDoc.data() as todo;
   
     if (todoData) {
-      const updatedDescription = todoData.description.map((desc, i) => (i === index ? value : desc));
-      await updateDoc(docRef, { description: updatedDescription, updatedAt: Timestamp.fromDate(new Date()) });
+      const updatedSubtasks = todoData.subtask.map((desc, i) => (i === index ? value : desc));
+      const updatedDates = todoData.subtaskUpdatedAt.map((date, i) => (i === index ? Timestamp.fromDate(new Date()) : date));
+      await updateDoc(docRef, { 
+        subtask: updatedSubtasks, 
+        updatedAt: Timestamp.fromDate(new Date()), 
+        subtaskUpdatedAt: updatedDates 
+      });
     }
   }
 };
@@ -306,13 +315,23 @@ export async function setCompleted(id: string, index: number, isCompleted: boole
   
     if (todoData) {
       const updatedState = todoData.completed.map((completed, i) => (i === index ? isCompleted : completed));
+      const updatedCompleteDate = todoData.completedAt.map((comletionDate, i) => (i === index ? Timestamp.fromDate(new Date()) : comletionDate));
+      const newSubtaskUpdatedAt = todoData.subtaskUpdatedAt.map((date, i) => (i === index) ? Timestamp.fromDate(new Date()) : date);
   
       if (isCompleted) {
-        const updatedCompleteDate = todoData.completedAt.map((comletionDate, i) => (i === index ? Timestamp.fromDate(new Date()) : comletionDate));
-        await updateDoc(docRef, { completed: updatedState, updatedAt: Timestamp.fromDate(new Date()), completedAt: updatedCompleteDate });
+        await updateDoc(docRef, { 
+          completed: updatedState, 
+          updatedAt: Timestamp.fromDate(new Date()), 
+          completedAt: updatedCompleteDate,
+          subtaskUpdatedAt: newSubtaskUpdatedAt
+        });
       }
       else {
-        await updateDoc(docRef, { completed: updatedState, updatedAt: Timestamp.fromDate(new Date()) });
+        await updateDoc(docRef, { 
+          completed: updatedState, 
+          updatedAt: Timestamp.fromDate(new Date()),
+          subtaskUpdatedAt: newSubtaskUpdatedAt
+        });
       }    
     }
   }
@@ -324,17 +343,19 @@ export async function addSubtask(id: string) {
     const document = await getDoc(docRef);
     const docData = document.data() as todo;
   
-    const newDescription = [...docData.description, ''];
+    const newSubtasks = [...docData.subtask, ''];
     const newCreatedAt = docData.createdAt ?? Timestamp.fromDate(new Date());
     const newCompleted = [...docData.completed, false];
     const newCompletedAt = [...docData.completedAt, Timestamp.fromDate(new Date(1, 0, 1))];
+    const newSubtaskUpdatedAt = [...docData.subtaskUpdatedAt, Timestamp.fromDate(new Date())];
   
     await updateDoc(docRef, {
-      description: newDescription,
+      description: newSubtasks,
       createdAt: newCreatedAt,
       updatedAt: Timestamp.fromDate(new Date()),
       completed: newCompleted,
       completedAt: newCompletedAt,
+      subtaskUpdatedAt: newSubtaskUpdatedAt
     });
   }
 };
@@ -346,21 +367,24 @@ export async function removeSubtask(id: string, index: number) {
     const docData = document.data() as todo;
   
     // Create new arrays
-    const newDescription = [...docData.description];
+    const newSubtasks = [...docData.subtask];
     const newCompleted = [...docData.completed];
     const newCompletedAt = [...docData.completedAt];
+    const newSubtaskUpdatedAt = [...docData.subtaskUpdatedAt];
   
     // Remove the subtask from the arrays using Array.splice
-    newDescription.splice(index, 1);
+    newSubtasks.splice(index, 1);
     newCompleted.splice(index, 1);
     newCompletedAt.splice(index, 1);
+    newSubtaskUpdatedAt.splice(index, 1);
   
     // Update the document with the new arrays
     await updateDoc(docRef, {
-      description: newDescription,
+      description: newSubtasks,
       updatedAt: Timestamp.fromDate(new Date()),
       completed: newCompleted,
       completedAt: newCompletedAt,
+      subtaskUpdatedAt: newSubtaskUpdatedAt
     });
   }
 };

@@ -1,7 +1,6 @@
 import styles from '../page.module.css';
 import { useEffect, useState } from 'react';
 import { signInWithGoogle, clearStorage, getUserPicUrl } from '../FirebaseHandler';
-import FireNotesLogo from './lockup.svg';
 import Image from 'next/image';
 import { AccountIcon, SettingsIcon } from '../assets/Icons';
 import Popup from './Popup';

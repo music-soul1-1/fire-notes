@@ -16,13 +16,13 @@ export default function Note(props : TodoProps) {
     <div key={props.todo.id}>
       {props.todo.id} title:
       <input value={props.todo.title} onChange={(e) => props.handleTitleChange(props.todo.id, e.target.value, 'todo')}></input>
-      {props.todo.description.map((val, index) => (
+      {props.todo.subtask.map((val, index) => (
         <div key={index}>
           <p>{index}:</p>
           <input type="checkbox" checked={props.todo.completed[index]} onChange={() => setCompleted(props.todo.id, index, !props.todo.completed[index])}/>
-          <input
+          <textarea
             key={index}
-            value={props.todo.description[index]}
+            value={props.todo.subtask[index]}
             onChange={(e) => props.handleContentChange(props.todo.id, e.target.value, 'todo', index)}
           />
           <button style={{marginLeft: 10}} onClick={() => removeSubtask(props.todo.id, index)}>remove</button>
