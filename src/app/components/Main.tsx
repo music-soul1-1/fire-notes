@@ -147,6 +147,7 @@ export default function Main() : JSX.Element {
       if ('content' in item) {
         return (
         <Note 
+          key={item.id}
           note={item}
           handleContentChange={handleContentChange}
           handleTitleChange={handleTitleChange}
@@ -159,6 +160,7 @@ export default function Main() : JSX.Element {
         } else {
           return (
             <Todo 
+              key={item.id}
               todo={item}
               handleContentChange={handleContentChange}
               handleTitleChange={handleTitleChange}
