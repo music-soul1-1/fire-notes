@@ -58,6 +58,10 @@ Then run
 npm i
 ```
 
+```
+npm install -g npm@9.8.0
+```
+
 And 
 
 ```

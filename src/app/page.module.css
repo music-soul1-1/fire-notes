@@ -6,7 +6,11 @@
   padding: 2rem;
   min-height: 100vh;
   background-color: var(--backgroundTernaryDark);
-  padding-left: 18%;
+
+}
+
+.bodyContainer {
+  background-color: var(--backgroundTernaryDark);
 }
 
 .description {
@@ -224,12 +228,39 @@
     top: 1rem !important;
     right: 1rem !important;
   }
+
+  .navLabel {
+    visibility: hidden;
+    display: none;
+  }
+
+  .NavigationContainer {
+    width: auto !important;
+  }
+
+  .headerTitle {
+    display: flex;
+    font-size: 1.6rem !important;
+  }
+
+  .headerLogo {
+    margin-left: 0.4rem !important;
+  }
 }
 
 /* Tablet and Smaller Desktop */
-@media (min-width: 701px) and (max-width: 1120px) {
+@media (min-width: 701px) and (max-width: 900px) {
   .grid {
     grid-template-columns: repeat(2, 50%);
+  }
+  
+  .navLabel {
+    visibility: hidden;
+    display: none;
+  }
+
+  .NavigationContainer {
+    width: auto !important;
   }
 }
 
@@ -323,6 +354,8 @@
 .accountPic {
   display: flex;
   float: right;
+  border-radius: 50%;
+  padding: 0.3rem;
 }
 
 
@@ -332,7 +365,6 @@
 
 .NavigationContainer {
   display: flex;
-  position: absolute;
   z-index: 0;
   flex-direction: column;
   float: left;
@@ -348,7 +380,7 @@
   justify-content: left;
   background-color: var(--ternary);
   width: 100%;
-  font-size: 1.7rem;
+  font-size: 1.6vw;
   color: var(--ternaryActive);
   margin: 0.4rem 0;
   padding: 0.5rem 0;
@@ -384,7 +416,7 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 10;
 }
 
@@ -392,7 +424,7 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  backdrop-filter: blur(1px);
+  backdrop-filter: blur(1.5px);
 }
 
 .popupInnerWindow {

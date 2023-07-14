@@ -29,7 +29,7 @@ export default function Home() {
   };
 
   return (
-    <div className='mybody'>
+    <div className={styles.bodyContainer}>
       {!uidFound ? 
 
       <LoginScreen /> : 
