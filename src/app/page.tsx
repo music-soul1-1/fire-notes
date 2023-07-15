@@ -1,4 +1,4 @@
-'use client' // this ensures that this will be rendered clien-side
+'use client' // this ensures that this will be rendered client-side
 
 import styles from './page.module.css'
 import { loadUid } from './FirebaseHandler'
@@ -7,39 +7,30 @@ import Header from './components/Header';
 import Navigation from './components/Navigation';
 import Main from './components/Main';
 import LoginScreen from './components/LoginScreen';
+import Popup from './components/Popup';
 
 export default function Home() {
+  const [isLoading, setLoading] = useState(true);
   const [uidFound, setUidFound] = useState<boolean>(false);
 
   useEffect(() => {
-    findUid();
+    setUidFound(loadUid());
+    setLoading(false);
   }, []);
 
-  useEffect(() => {
-    findUid();
-  }, [uidFound]);
-
-  function findUid() {
-    if (loadUid()) {
-      setUidFound(true);
-    }
-    else {
-      setUidFound(false);
-    }
-  };
-
+  if (isLoading) return <Popup content={<p>Loading...</p>} handleClose={() => {}} hideCloseButton />;
+  
   return (
     <div className={styles.bodyContainer}>
-      {!uidFound ? 
-
-      <LoginScreen /> : 
-
+      {!uidFound ? (
+        <LoginScreen />
+      ) : (
         <div>
           <Header />
           <Navigation />
           <Main />
         </div>
-      }
+      )}
     </div>
-  )
+  );
 }

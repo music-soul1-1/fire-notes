@@ -6,7 +6,7 @@ import Image from "next/image";
 export default function LoginScreen() : JSX.Element {
   async function handleUid() {
     await signInWithGoogle();
-  }
+  };
   
   return (
     <div className={styles.popupContainer}>

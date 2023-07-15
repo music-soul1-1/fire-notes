@@ -350,7 +350,7 @@ export async function addSubtask(id: string) {
     const newSubtaskUpdatedAt = [...docData.subtaskUpdatedAt, Timestamp.fromDate(new Date())];
   
     await updateDoc(docRef, {
-      description: newSubtasks,
+      subtask: newSubtasks,
       createdAt: newCreatedAt,
       updatedAt: Timestamp.fromDate(new Date()),
       completed: newCompleted,
@@ -380,7 +380,7 @@ export async function removeSubtask(id: string, index: number) {
   
     // Update the document with the new arrays
     await updateDoc(docRef, {
-      description: newSubtasks,
+      subtask: newSubtasks,
       updatedAt: Timestamp.fromDate(new Date()),
       completed: newCompleted,
       completedAt: newCompletedAt,
