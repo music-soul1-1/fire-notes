@@ -9,11 +9,15 @@ import React, { useEffect, useState } from "react";
 import styles from '../page.module.css';
 import Note from './Note';
 import Todo from './Todo';
+import Popup from "./Popup";
 import { Timestamp } from "firebase/firestore";
+import NotePopup from "./NotePopup";
 
 export default function Main() : JSX.Element {
   const [notes, setNotes] = useState<note[]>([]);
   const [todos, setTodos] = useState<todo[]>([]);
+  const [selectedItem, setSelectedItem] = useState<note | todo | null>(null);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(()=> {
     loadUid();
@@ -137,6 +141,18 @@ export default function Main() : JSX.Element {
     return bUpdatedAt - aUpdatedAt;
   });
 
+    // Function to handle opening a note or todo as a popup
+    const handleOpenPopup = (item: note | todo) => {
+      setSelectedItem(item);
+      setShowPopup(true);
+    };
+  
+    // Function to close the popup
+    const handleClosePopup = () => {
+      setSelectedItem(null);
+      setShowPopup(false);
+    };
+
 
   return (
     <div className={styles.main}>      
@@ -152,6 +168,7 @@ export default function Main() : JSX.Element {
           addTag={addTag}
           removeTag={removeTag}
           deleteDocument={deleteDocument}
+          handleOpenPopup={handleOpenPopup}
         />
         );
         } else {
@@ -165,10 +182,25 @@ export default function Main() : JSX.Element {
               addTag={addTag}
               removeTag={removeTag}
               deleteDocument={deleteDocument}
+              handleOpenPopup={handleOpenPopup}
             />
           )
         }
       })}
+
+      {showPopup && selectedItem && 'content' in selectedItem && (
+        <NotePopup
+          note={selectedItem}
+          handleContentChange={handleContentChange}
+          handleTitleChange={handleTitleChange}
+          handleTagUpdate={handleTagUpdate}
+          addTag={addTag}
+          removeTag={removeTag}
+          deleteDocument={deleteDocument}
+          handleOpenPopup={handleOpenPopup}
+          handleClose={handleClosePopup}
+        />
+      )}
 
       <button onClick={() => addNote("test note", "test content") }>add note</button>
       <button onClick={() => addTodo("test", ["first todo", "second todo"]) }>add todo</button>

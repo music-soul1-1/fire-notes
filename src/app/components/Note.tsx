@@ -1,8 +1,8 @@
 import React from "react";
-import {note} from '../FirebaseHandler';
-import { Timestamp } from "firebase/firestore";
+import {note, todo} from '../FirebaseHandler';
+import NotePopup from "./NotePopup";
 
-type NoteProps = {
+export type NoteProps = {
   note: note;
   handleTitleChange: (id: string, value: string, type: 'note' | 'todo') => void;
   handleContentChange: (id: string, value: string, type: 'note' | 'todo', index? : number) => void;
@@ -10,11 +10,13 @@ type NoteProps = {
   removeTag: (id: string, index: number, type: 'note' | 'todo') => void;
   addTag: (id: string, tag: string, type: 'note' | 'todo') => void;
   deleteDocument: (id: string, type: 'todo' | 'note') => void;
+  handleOpenPopup: (item: note | todo) => void;
+  handleClose?: () => void;
 };
 
-export default function Note(props : NoteProps) {
+export default function Note(props: NoteProps) {
   return (
-    <div key={props.note.id}>
+    <div key={props.note.id} onClick={() => props.handleOpenPopup(props.note)}>
       <input
         value={props.note.title}
         onChange={(e) => props.handleTitleChange(props.note.id, e.target.value, 'note')}

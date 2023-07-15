@@ -9,11 +9,12 @@ type TodoProps = {
   removeTag: (id: string, index: number, type: 'note' | 'todo') => void;
   addTag: (id: string, tag: string, type: 'note' | 'todo') => void;
   deleteDocument: (id: string, type: 'todo' | 'note') => void;
+  handleOpenPopup: (item: todo) => void;
 };
 
 export default function Note(props : TodoProps) {
   return (
-    <div key={props.todo.id}>
+    <div key={props.todo.id} onClick={() => props.handleOpenPopup(props.todo)}>
       {props.todo.id} title:
       <input value={props.todo.title} onChange={(e) => props.handleTitleChange(props.todo.id, e.target.value, 'todo')}></input>
       {props.todo.subtask.map((val, index) => (
