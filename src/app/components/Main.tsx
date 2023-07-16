@@ -1,17 +1,16 @@
 import { 
   getAllNotes, getAllTodos, note, todo, 
-  addTodo, addNote, updateNoteContent, updateNoteTitle, 
-  subscribeToNotesChanges, subscribeToTodosChanges, loadUid,
-  updateTodoSubtask, updateTodoTitle, deleteDocument, addTag, 
-  updateTag, removeTag
+  addTodo, addNote, subscribeToNotesChanges, subscribeToTodosChanges, 
+  loadUid,
 } from "../FirebaseHandler";
 import React, { useEffect, useState } from "react";
 import styles from '../page.module.css';
 import Note from './Note';
 import Todo from './Todo';
-import Popup from "./Popup";
 import { Timestamp } from "firebase/firestore";
 import NotePopup from "./NotePopup";
+import TodoPopup from "./TodoPopup";
+import { NoteIcon, TodoIcon } from "../assets/Icons";
 
 export default function Main() : JSX.Element {
   const [notes, setNotes] = useState<note[]>([]);
@@ -45,91 +44,6 @@ export default function Main() : JSX.Element {
       unsubscribeFromTodos();
     }
   }, []);
-
-  // TODO: Refactor these functions:
-  async function handleContentChange(id: string, value: string, type: 'note' | 'todo', index? : number) {
-    if (type === 'note') {
-      setNotes(prevNotes => prevNotes.map(note => {
-        if (note.id === id) {
-          return { ...note, content: value };
-        }
-        return note;
-      }));
-  
-      await updateNoteContent(id, value);
-    }
-    else if (index || index == 0) {
-      setTodos(prevTodos => prevTodos.map(todo => {
-        if (todo.id == id) {
-          return { 
-            ...todo,
-            subtask: todo.subtask.map((desc, i) => (i === index ? value : desc)) 
-          };
-        }
-        return todo;
-      }));
-  
-      await updateTodoSubtask(id, index, value);
-    }
-  };
-
-  async function handleTitleChange(id: string, value: string, type: 'note' | 'todo') {
-    if (type === 'note') {
-      setNotes(prevNotes => prevNotes.map(note => {
-        if (note.id === id) {
-          return { 
-            ...note, 
-            title: value 
-          };
-        }
-        return note;
-      }));
-  
-      await updateNoteTitle(id, value);
-    }
-    else {
-      setTodos(prevTodos => prevTodos.map(todo => {
-        if (todo.id == id) {
-          return { 
-            ...todo,
-            title: value
-          };
-        }
-        return todo;
-      }));
-  
-      await updateTodoTitle(id, value);
-    }
-  };
-
-  async function handleTagUpdate(id: string, index: number, newValue: string, type: 'note' | 'todo') {
-    if (type === 'note') {
-      setNotes(prevTodos => prevTodos.map(note => {
-        if (note.id == id) {
-          return { 
-            ...note,
-            tags: note.tags.map((tag, i) => (i === index ? newValue : tag)) 
-          };
-        }
-        return note;
-      }));
-
-      await updateTag(id, index, newValue, 'note');
-    }
-    else {
-      setTodos(prevTodos => prevTodos.map(todo => {
-        if (todo.id == id) {
-          return { 
-            ...todo,
-            tags: todo.tags.map((tag, i) => (i === index ? newValue : tag)) 
-          };
-        }
-        return todo;
-      }));
-
-      await updateTag(id, index, newValue, 'todo');
-    }
-  };
   
   // Combine notes and todos into a single array
   const combinedArray: (note | todo)[] = [...notes, ...todos];
@@ -155,55 +69,69 @@ export default function Main() : JSX.Element {
 
 
   return (
-    <div className={styles.main}>      
-      {sortedArray.map((item) => {
-      if ('content' in item) {
-        return (
-        <Note 
-          key={item.id}
-          note={item}
-          handleContentChange={handleContentChange}
-          handleTitleChange={handleTitleChange}
-          handleTagUpdate={handleTagUpdate}
-          addTag={addTag}
-          removeTag={removeTag}
-          deleteDocument={deleteDocument}
-          handleOpenPopup={handleOpenPopup}
-        />
-        );
-        } else {
+    <div className={styles.main}>
+      <div className={styles.addButtonsContainer}>
+        <button className={styles.addButton} onClick={() => addNote("title", "note content") }>
+          
+          <NoteIcon 
+            className={styles.NavIcon}
+            width={30}
+            height={30}
+          />
+          <p>Add note</p>
+        </button>
+
+        <button className={styles.addButton} onClick={() => addTodo("title", ["first todo", "second todo"])}>
+          
+          <TodoIcon 
+            className={styles.NavIcon}
+            width={30}
+            height={30}
+          />
+          <p>Add todo</p>
+        </button>
+      </div>
+      
+
+
+      <div className={styles.grid}>
+        {sortedArray.map((item) => {
+        if ('content' in item) {
           return (
-            <Todo 
-              key={item.id}
-              todo={item}
-              handleContentChange={handleContentChange}
-              handleTitleChange={handleTitleChange}
-              handleTagUpdate={handleTagUpdate}
-              addTag={addTag}
-              removeTag={removeTag}
-              deleteDocument={deleteDocument}
-              handleOpenPopup={handleOpenPopup}
-            />
-          )
-        }
-      })}
+          <Note 
+            key={item.id}
+            note={item}
+            handleOpenPopup={handleOpenPopup}
+            handleClose={handleClosePopup}
+          />
+          );
+          } else {
+            return (
+              <Todo 
+                key={item.id}
+                todo={item}
+                handleOpenPopup={handleOpenPopup}
+                handleClose={handleClosePopup}
+              />
+            )
+          }
+        })}
+      </div>  
 
       {showPopup && selectedItem && 'content' in selectedItem && (
         <NotePopup
           note={selectedItem}
-          handleContentChange={handleContentChange}
-          handleTitleChange={handleTitleChange}
-          handleTagUpdate={handleTagUpdate}
-          addTag={addTag}
-          removeTag={removeTag}
-          deleteDocument={deleteDocument}
           handleOpenPopup={handleOpenPopup}
           handleClose={handleClosePopup}
         />
       )}
-
-      <button onClick={() => addNote("test note", "test content") }>add note</button>
-      <button onClick={() => addTodo("test", ["first todo", "second todo"]) }>add todo</button>
+      {showPopup && selectedItem && 'subtask' in selectedItem && (
+        <TodoPopup
+          todo={selectedItem}
+          handleOpenPopup={handleOpenPopup}
+          handleClose={handleClosePopup}
+        />
+      )}
     </div>
   )
 }

@@ -6,7 +6,7 @@
   padding: 2rem;
   min-height: 100vh;
   background-color: var(--backgroundTernaryDark);
-
+  
 }
 
 .bodyContainer {
@@ -137,13 +137,6 @@
     padding: 4rem;
   }
 
-  .grid {
-    grid-template-columns: 1fr;
-    margin-bottom: 120px;
-    max-width: 320px;
-    text-align: center;
-  }
-
   .card {
     padding: 1rem 2.5rem;
   }
@@ -209,8 +202,9 @@
 
   .popupInnerWindow {
     width: 100%;
-    height: 100vh;
+    height: 100% !important;
     border-radius: 0 !important;
+    border-color: var(--secondary) !important;
     
     overflow: auto !important;
   }
@@ -245,6 +239,10 @@
 
   .headerLogo {
     margin-left: 0.4rem !important;
+  }
+
+  .addButtonsContainer {
+    flex-direction: column !important;
   }
 }
 
@@ -335,6 +333,7 @@
   border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.1s ease;
+  fill: #1a689f
 }
 
 .iconButton:focus {
@@ -345,10 +344,11 @@
   background-color: var(--ternaryHoverDark);
 }
 
-.settingsLogo {
+.settingsIcon {
   display: flex;
   align-items: center;
   justify-content: center;
+  fill: #1a689f
 }
 
 .accountPic {
@@ -356,6 +356,7 @@
   float: right;
   border-radius: 50%;
   padding: 0.3rem;
+  fill: #1a689f
 }
 
 
@@ -394,12 +395,17 @@
 .NavTab:hover {
   background-color: var(--ternaryActive);
   color: var(--textActiveLight);
+
+  .NavIcon {
+    fill: var(--textActiveLight);
+  }
 }
 
 .NavIcon {
   display: flex;
   float: left;
   margin: 0 1rem;
+  fill: var(--ternaryActive);
 }
 
 /* Popup */
@@ -442,6 +448,10 @@
   border: solid var(--primary) 2px;
 }
 
+.todoPopupInnerWindow {
+  border-color: var(--secondary);
+}
+
 .popupCloseButton {
   position: absolute;
   display: flex;
@@ -478,7 +488,7 @@
   flex-direction: row;
   border-radius: 5rem;
   background-color: var(--ternaryActive);
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, fill 0.2s ease;
   padding: 1rem 1.3rem;
   margin: 3rem 0 0.3rem;
   font-size: medium;
@@ -491,6 +501,10 @@
   background-color: var(--textActiveLight);
   color: var(--ternary);
   border: solid var(--primary) 0.1rem;
+
+  .NavIcon {
+    fill: var(--textActiveLight);
+  }
 }
 
 .roundedButton:focus {
@@ -506,4 +520,188 @@
 
 .googleIcon {
   margin-left: 1rem;
+}
+
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-gap: 1rem;
+  width: var(--max-width);
+  max-width: 100%;
+}
+
+.cardContainer {
+  background-color: var(--ternary);
+  border: solid 2px transparent;
+  border-radius: 1.4rem;
+  padding: 0.7rem;
+  transition: border 0.15s ease, visibility 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cardContainer:hover {
+  border: solid 2px var(--primary);
+ 
+  .updatedAt {
+    visibility: visible;
+  }
+}
+
+ .todoContainer:hover {
+   border: solid 2px var(--secondary);
+ }
+
+.cardTitle {
+  font-weight: bold;
+}
+
+.cardContent {
+  margin-top: 0.5rem;
+  word-wrap: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 6; /* Limit to 6 lines */
+  -webkit-box-orient: vertical;
+  font-size: 1rem; /* Adjust the font size as needed */
+}
+
+
+.cardTagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.cardTag {
+  background-color: var(--primary);
+  color: white;
+  border-radius: 0.3rem;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.todoCardTag {
+  background-color: var(--secondary);
+  color: var(--ternary);
+}
+
+.tagsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.tagIcon {
+  fill: var(--primary);
+  margin-right: 0.6rem;
+}
+
+.todoTagIcon {
+  fill: var(--secondary);
+}
+
+/* Solid border */
+div.horizontalLine {
+  margin-top: 0.3rem;
+  border-top: 0.1rem solid rgba(7, 68, 111, 0.5);
+  width: 100%;
+}
+
+.cardTextContainer {
+  width: 100%;
+  
+}
+
+.cardSubtaskContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+  word-wrap: break-word;
+}
+
+.cardSubtaskContainer span {
+  margin: 0;
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Display ellipsis (...) for overflow */
+}
+
+.cardSubtaskContainer .icon {
+  margin: 0 0.5rem;
+}
+
+
+.cardContent {
+  margin-top: 0.5rem;
+  word-wrap: break-word;
+}
+
+.cardButtons {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.deleteButton {
+  display: flex;
+  float: right;
+  fill: var(--ternaryActive);
+}
+
+.icon {
+  display: flex;
+  fill: var(--ternaryActive);
+}
+
+p.updatedAt {
+  visibility: hidden;
+  font-size: 0.8rem;
+  color: var(--primary);
+}
+
+p.todoUpdatedAt {
+  color: var(--secondary);
+}
+
+.addButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 4rem;
+  gap: 2rem;
+}
+
+.addButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border: none;
+  padding: 0.4rem 2rem;
+  border-radius: 1rem;
+  background-color: var(--ternary);
+  fill: var(--ternaryActive);
+  color: var(--ternaryActive);
+  font-size: large;
+
+  .NavIcon {
+    margin: 0;
+    margin-right: 0.6rem;
+  }
+}
+
+.addButton:hover {
+  background-color: var(--ternaryActive);
+  fill: var(--textActiveLight);
+  color: var(--textActiveLight);
+
+  .NavIcon {
+    fill: var(--textActiveLight);
+  }
 }

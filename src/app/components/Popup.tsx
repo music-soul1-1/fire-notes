@@ -6,6 +6,7 @@ export type popupProps = {
   content: JSX.Element,
   handleClose: any,
   hideCloseButton?: true
+  isTodo?: true
 };
 
 export default function Popup(props : popupProps) {
@@ -13,14 +14,18 @@ export default function Popup(props : popupProps) {
     <div className={styles.popupContainer}>
       <div className={styles.popupBackground} onClick={props.handleClose} />
 
-      <div className={styles.popupInnerWindow}>
+      <div 
+        className={`
+        ${styles.popupInnerWindow} 
+        ${props.isTodo ? styles.todoPopupInnerWindow : ''}`} 
+      >
         {!props.hideCloseButton ? (
           <button className={styles.popupCloseButton} onClick={props.handleClose}>
             <CancelIcon 
               alt='Close'
               width={40}
               height={40}
-              fill={'#1A5986'}
+              fill={'#1a689f'}
             />
           </button>
         ) : null}

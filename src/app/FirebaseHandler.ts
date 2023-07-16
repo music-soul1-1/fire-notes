@@ -13,6 +13,7 @@ export type note = {
   tags: string[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
+  isAttached: boolean;
 };
 
 export type todo = {
@@ -25,6 +26,7 @@ export type todo = {
   createdAt:Timestamp;
   updatedAt: Timestamp;
   subtaskUpdatedAt: Timestamp[];
+  isAttached: boolean;
 };
 
 const firebaseConfig = {
@@ -110,6 +112,7 @@ export async function addNote(title : string, content : string) {
       content: content,
       createdAt: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date()),
+      isAttached: false
     });
   }
 };
@@ -137,6 +140,7 @@ export async function getAllNotes() {
       tags: data.tags,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
+      isAttached: data.isAttached
     };
     return noteData;
   });
@@ -165,7 +169,8 @@ export async function getAllTodos() {
       completedAt: data.completedAt,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
-      subtaskUpdatedAt: data.subtaskUpdatedAt
+      subtaskUpdatedAt: data.subtaskUpdatedAt,
+      isAttached: data.isAttached
     };
     return todoData;
   });
@@ -277,7 +282,8 @@ export async function addTodo(title: string, subtask: string[]) {
     completedAt: specialDateArr, 
     createdAt: Timestamp.fromDate(new Date()),
     updatedAt: Timestamp.fromDate(new Date()),
-    subtaskUpdatedAt: currentDateArr
+    subtaskUpdatedAt: currentDateArr,
+    isAttached: false
   });
 };
 
@@ -453,4 +459,12 @@ export async function getUserPicUrl() {
 
     return <string>data?.userPicUrl;
   }
+}
+
+export function convertTimestampToString(timestamp : Timestamp) {
+  const date = timestamp.toDate();
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const formattedDate = `${hours}:${minutes}, ${date.toLocaleDateString([], { day: 'numeric', month: 'numeric' })}`;
+  return formattedDate;
 }

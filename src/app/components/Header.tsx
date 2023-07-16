@@ -41,7 +41,7 @@ export default function Header(): JSX.Element {
             alt='Settings'
             width={28}
             height={28}
-            className={styles.settingsLogo}
+            className={styles.settingsIcon}
           />
         </button>
         <button className={styles.iconButton}>
