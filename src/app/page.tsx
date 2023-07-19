@@ -18,7 +18,7 @@ export default function Home() {
     setLoading(false);
   }, []);
 
-  if (isLoading) return <Popup content={<p>Loading...</p>} handleClose={() => {}} hideCloseButton />;
+  if (isLoading) return <Popup content={<p style={{margin: 30}}>Loading...</p>} handleClose={() => {}} hideCloseButton />;
   
   return (
     <div className={styles.bodyContainer}>

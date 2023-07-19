@@ -132,6 +132,13 @@
 }
 
 /* Mobile */
+
+@media (max-width: 700px) and (max-height: 1200px) {
+  .notePopupContainer {
+    max-height: 80vh !important; /* Set the maximum height of the popup */
+  }
+}
+
 @media (max-width: 700px) {
   .content {
     padding: 4rem;
@@ -436,7 +443,7 @@
 .popupInnerWindow {
   position: relative;
   z-index: 20;
-  padding: 5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -446,6 +453,10 @@
   border-radius: 2rem;
   box-shadow: -0.1rem 0.2rem 0.4rem 0.3rem rgba(0, 0, 0, 0.15);
   border: solid var(--primary) 2px;
+}
+
+.popupOpen {
+  overflow: hidden;
 }
 
 .todoPopupInnerWindow {
@@ -481,6 +492,7 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto;
+  padding: 2.5rem;
 }
 
 .roundedButton {
@@ -557,6 +569,8 @@
 
 .cardTitle {
   font-weight: bold;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .cardContent {
@@ -574,6 +588,7 @@
   display: flex;
   flex-wrap: wrap;
   margin-top: 0.5rem;
+  align-items: center;
 }
 
 .cardTag {
@@ -690,6 +705,8 @@ p.todoUpdatedAt {
   color: var(--ternaryActive);
   font-size: large;
 
+  transition: all 0.2s ease;
+
   .NavIcon {
     margin: 0;
     margin-right: 0.6rem;
@@ -705,3 +722,128 @@ p.todoUpdatedAt {
     fill: var(--textActiveLight);
   }
 }
+
+.notePopupContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.5rem;
+  max-height: 400px; /* Set the maximum height of the popup */
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-width: 600px;
+}
+
+.notePopupContainer input {
+  font-size: large;
+  
+}
+
+.notePopupContainer textarea {
+  display: flex;
+  height: 1rem;
+  font-size: 1.2rem;
+  resize: none;
+  padding: .2rem .4rem;
+  width: 100%;
+  font-family: sans-serif;
+  border: none;
+  letter-spacing: 0.05rem;
+  background-color: transparent;
+}
+
+.notePopupContainer textarea:focus {
+  outline: none;
+  border-bottom: solid 2px var(--textActiveLight);
+}
+
+.notePopupContainer textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notePopupContainer textarea::-webkit-scrollbar-thumb {
+  background-color: var(--ternaryActive);
+  border-radius: 4px;
+}
+
+.notePopupContainer textarea::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+
+.notePopupContainer .popupNoteTitle {
+  font-size: 1.7rem;
+  resize: none;
+  padding: 0 0.4rem;
+  width: 100%;
+  font-family: sans-serif;
+  border: none;
+  letter-spacing: 0.05rem;
+  word-wrap: break-word;
+  min-height: 1.7rem;
+  line-height: 1.8rem;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+.notePopupContainer .tagIcon {
+  fill: var(--ternaryActive);
+}
+
+.notePopupContainer .cardButtons {
+  margin-top: 0.5rem;
+  justify-content: space-between;
+}
+
+.popupTagsContainer {
+  display: flex;
+  flex-direction: row;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.popupTagsContainer div {
+  display: flex;
+  flex-wrap: wrap;
+  border: none;
+  border-radius: 0.3rem;
+  background-color: var(--ternaryActive);
+  margin: 0.2rem;
+  margin-right: 1rem;
+}
+
+.popupTagsContainer input {
+  border: solid 2px var(--ternaryActive);
+  border-radius: 0.3rem;
+  background-color: var(--ternaryActive);
+  padding: 0.05rem 0.5rem;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.popupTagsContainer input:focus {
+  outline: none;
+  border: solid 2px var(--textActiveLight);
+}
+
+.tagRemoveIcon {
+  fill: var(--textActiveLight);
+}
+
+.addTagButton {
+  display: flex;
+  float: left;
+  fill: var(--ternaryActive);
+}
+
+
+
+.popupSubtasksContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+
+.popupSubtasksContainer textarea {
+  height: auto;
+}
+

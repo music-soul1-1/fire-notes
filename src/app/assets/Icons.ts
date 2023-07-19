@@ -8,3 +8,5 @@ export {default as NoteIcon} from './icon-buttons/sticky-note.svg';
 export {default as CancelIcon} from './icon-buttons/cancel_black_24dp.svg';
 export {default as CheckboxIconChecked} from './icon-buttons/check_box_24dp_checked.svg';
 export {default as CheckboxIconOutline} from './icon-buttons/check_box_24dp_outline.svg';
+export {default as AddTagIcon} from './icon-buttons/new_label_black_24dp.svg';
+export {default as AddTaskIcon} from './icon-buttons/add_task_black_24dp.svg';

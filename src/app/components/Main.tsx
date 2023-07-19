@@ -59,19 +59,21 @@ export default function Main() : JSX.Element {
     const handleOpenPopup = (item: note | todo) => {
       setSelectedItem(item);
       setShowPopup(true);
+      document.body.classList.add(styles.popupOpen);
     };
   
     // Function to close the popup
     const handleClosePopup = () => {
       setSelectedItem(null);
       setShowPopup(false);
+      document.body.classList.remove(styles.popupOpen);
     };
 
 
   return (
     <div className={styles.main}>
       <div className={styles.addButtonsContainer}>
-        <button className={styles.addButton} onClick={() => addNote("title", "note content") }>
+        <button className={styles.addButton} onClick={() => addNote("Title", "Note") }>
           
           <NoteIcon 
             className={styles.NavIcon}
@@ -81,7 +83,7 @@ export default function Main() : JSX.Element {
           <p>Add note</p>
         </button>
 
-        <button className={styles.addButton} onClick={() => addTodo("title", ["first todo", "second todo"])}>
+        <button className={styles.addButton} onClick={() => addTodo("Title", ["Todo"])}>
           
           <TodoIcon 
             className={styles.NavIcon}

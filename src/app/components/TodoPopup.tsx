@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   updateTodoTitle, updateTodoSubtask, addTag, updateTag, 
   removeTag, setCompleted, addSubtask, removeSubtask, deleteDocument 
@@ -7,6 +7,7 @@ import Popup from './Popup';
 import { Timestamp } from "firebase/firestore";
 import styles from '../page.module.css';
 import { TodoProps } from './Todo';
+import { DeleteIcon, TagIcon, CancelIcon, AddTagIcon, AddTaskIcon, CheckboxIconChecked, CheckboxIconOutline } from '../assets/Icons';
 
 
 export default function TodoPopup(props: TodoProps) {
@@ -14,6 +15,7 @@ export default function TodoPopup(props: TodoProps) {
   const [title, setTitle] = useState(props.todo.title);
   const [tags, setTags] = useState(props.todo.tags);
   const [completed, setSubtaskCompleted] = useState(props.todo.completed);
+  const titleTextareaRef = useRef<HTMLTextAreaElement>(null);
 
 
   const handleSubtaskChange = async (newValue: string, index: number) => {
@@ -42,7 +44,7 @@ export default function TodoPopup(props: TodoProps) {
     await removeSubtask(props.todo.id, index);
   }
 
-  const handleTitleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTitle(e.target.value);
     await updateTodoTitle(props.todo.id, e.target.value);
   };
@@ -73,6 +75,18 @@ export default function TodoPopup(props: TodoProps) {
 
     await setCompleted(props.todo.id, index, value);
   };
+
+
+  const adjustTextareaHeight = (ref: React.RefObject<HTMLTextAreaElement>) => {
+    if (ref.current) {
+      ref.current.style.height = 'auto';
+      ref.current.style.height = `${ref.current.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight(titleTextareaRef);
+  }, [title]);
   
 
   return (
@@ -82,33 +96,119 @@ export default function TodoPopup(props: TodoProps) {
         handleClose={props.handleClose}
         content={
           <div>
-            <p>Popup content for item ID: {props.todo.id}</p>
-            <input value={title} onChange={handleTitleChange} />
+            <div className={styles.notePopupContainer}>
+              <textarea 
+                ref={titleTextareaRef}
+                className={styles.popupNoteTitle} 
+                style={{marginBottom: 30}}
+                value={title} 
+                onChange={handleTitleChange} />
 
-            {Array.isArray(subtasks) ? subtasks.map((val, index) => (
-              <div key={index}>
-                <p>{index}:</p>
-                <input type="checkbox" checked={completed[index]} onChange={() => handleCompletionChange(index, !completed[index])}/>
-                <textarea
-                  key={index}
-                  value={subtasks[index]}
-                  onChange={(e) => handleSubtaskChange(e.target.value, index)}
-                />
-                <button style={{marginLeft: 10}} onClick={() => handleRemoveSubtask(index)}>remove subtask</button>
+              {Array.isArray(subtasks) ? subtasks.map((val, index) => (
+                <div key={index} className={styles.popupSubtasksContainer}>
+
+                  <button className={styles.iconButton} onClick={() => handleCompletionChange(index, !completed[index])}>
+                    {completed[index] ? (
+                        <CheckboxIconChecked 
+                        className={styles.icon}
+                        alt='checked'
+                        width={25}
+                        height={25}
+                      />
+                      
+                    ) : (
+                        <CheckboxIconOutline 
+                          className={styles.icon}
+                          alt='not checked'
+                          width={25}
+                          height={25}
+                        />
+                    )}
+                  </button>
+                  
+                  <textarea
+                    key={index}
+                    value={subtasks[index]}
+                    onChange={(e) => handleSubtaskChange(e.target.value, index)}
+                  />
+                  <button className={styles.iconButton} onClick={() => handleRemoveSubtask(index)}>
+                    <CancelIcon 
+                      alt="remove subtask"
+                      width={25}
+                      height={25}
+                    />
+                  </button>
+                </div>
+                
+              )) : null }
+              <div style={{display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, marginTop: 15, justifyContent: 'center'}}>
+                <button className={styles.iconButton} onClick={() => handleAddSubtask('')}>
+                  <AddTaskIcon 
+                    alt="add subtask"
+                    width={30}
+                    height={30}
+                    className={styles.addSubtaskIcon}
+                  />
+                </button>
+                <p>👈Add subtask</p>
               </div>
-              
-            )) : null }
-            <button style={{marginBottom: 30}} onClick={() => handleAddSubtask('')}>+ add subtask</button>
 
-            {Array.isArray(tags) ? tags.map((tag, index) => (
-              <div key={index}>
-                <input value={tag} onChange={(e) => handleUpdateTag(e.target.value, index)} />
-                <button onClick={() => handleTagDelete(index)}>delete tag</button>
+              {/* Tags */}
+              <div className={styles.tagsContainer}>
+                {Array.isArray(tags) && (
+                  <div className={styles.cardTagsContainer}>
+                    <TagIcon 
+                      alt={'tags: '}
+                      className={styles.tagIcon}
+                      width={20}
+                      height={20}
+                    />
+
+                    {tags.map((tag, index) => (
+                      <div key={index} className={styles.popupTagsContainer}>
+                      <div style={{display: 'flex'}}>
+                        <input value={tag} onChange={(e) => handleUpdateTag(e.target.value, index)} />
+                        <button className={styles.iconButton} onClick={() => handleTagDelete(index)}>
+                          <CancelIcon 
+                            alt='remove tag'
+                            width={20}
+                            height={20}
+                            className={styles.tagRemoveIcon}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            )) : null }
-            <button onClick={() => handleAddTag('')}>Add new tag</button>
-            <button onClick={() => { deleteDocument(props.todo.id, 'todo'); props.handleClose(); }}>Delete todo</button>
 
+
+              <div className={styles.cardButtons}>
+                <button 
+                  className={styles.iconButton} 
+                  onClick={() => handleAddTag('')}>
+                  
+                  <AddTagIcon 
+                    alt='+'
+                    width={30}
+                    height={30}
+                    className={styles.addTagButton}
+                  />
+                </button>
+                <button
+                  className={styles.iconButton}
+                  onClick={() => { deleteDocument(props.todo.id, 'todo'); props.handleClose(); }}
+                >
+                  <DeleteIcon 
+                    alt='delete note'
+                    width={30}
+                    height={30}
+                    className={styles.deleteButton}
+                  />
+                </button>
+              </div>
+            </div>
           </div>
         }
       />
