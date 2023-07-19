@@ -36,7 +36,7 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET + "",
   messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID + "",
   appId: process.env.NEXT_PUBLIC_APP_ID + "",
-}
+};
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
@@ -67,7 +67,6 @@ export function loadUid() {
 
 export async function signInWithGoogle() {
   signInWithPopup(auth, provider).then(async (result) => { // TODO: change this to redirect
-    console.log(result);
     const displayName = result?.user.displayName;
     const email = result?.user.email;
     const profilePic = result?.user.photoURL;
@@ -90,7 +89,9 @@ export async function signInWithGoogle() {
       });
     }
 
-    localStorage.setItem("uid", uid);
+    await updateDoc(userDocRef, {lastLogin: new Date()}); // updating last login date
+
+    localStorage.setItem("uid", uid); // TODO: change this to cookie
 
     location.reload(); // Reloading page // TODO: Remove reloading
   }).catch((error) => {
