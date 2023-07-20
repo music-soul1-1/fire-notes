@@ -10,3 +10,6 @@ export {default as CheckboxIconChecked} from './icon-buttons/check_box_24dp_chec
 export {default as CheckboxIconOutline} from './icon-buttons/check_box_24dp_outline.svg';
 export {default as AddTagIcon} from './icon-buttons/new_label_black_24dp.svg';
 export {default as AddTaskIcon} from './icon-buttons/add_task_black_24dp.svg';
+export {default as GithubLogo} from './app-icons/github-mark-white.svg';
+export {default as VercelLogo} from './app-icons/vercel.svg';
+export {default as NextJSLogo} from './app-icons/nextjs-logotype-dark-background.svg';

@@ -4,7 +4,6 @@ import {
   updateTag, removeTag, deleteDocument 
 } from '../FirebaseHandler';
 import Popup from './Popup';
-import { Timestamp } from "firebase/firestore";
 import styles from '../page.module.css';
 import { NoteProps } from './Note';
 import { DeleteIcon, TagIcon, CancelIcon, AddTagIcon } from '../assets/Icons';
@@ -92,6 +91,7 @@ export default function NotePopup(props: NoteProps) {
                       <input value={tag} onChange={(e) => handleUpdateTag(e.target.value, index)} />
                       <button className={styles.iconButton} onClick={() => handleTagDelete(index)}>
                         <CancelIcon 
+                          title='Remove tag'
                           alt='remove tag'
                           width={20}
                           height={20}
@@ -122,6 +122,7 @@ export default function NotePopup(props: NoteProps) {
                 onClick={() => { deleteDocument(props.note.id, 'note'); props.handleClose(); }}
               >
                 <DeleteIcon 
+                  title='Delete note'
                   alt='delete note'
                   width={30}
                   height={30}

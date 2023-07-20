@@ -88,6 +88,7 @@ export default function Todo(props : TodoProps) {
           onClick={handleDelete}
         >
           <DeleteIcon 
+            title='Delete note'
             alt='delete note'
             width={30}
             height={30}

@@ -4,7 +4,6 @@ import {
   removeTag, setCompleted, addSubtask, removeSubtask, deleteDocument 
 } from '../FirebaseHandler';
 import Popup from './Popup';
-import { Timestamp } from "firebase/firestore";
 import styles from '../page.module.css';
 import { TodoProps } from './Todo';
 import { DeleteIcon, TagIcon, CancelIcon, AddTagIcon, AddTaskIcon, CheckboxIconChecked, CheckboxIconOutline } from '../assets/Icons';
@@ -133,6 +132,7 @@ export default function TodoPopup(props: TodoProps) {
                   />
                   <button className={styles.iconButton} onClick={() => handleRemoveSubtask(index)}>
                     <CancelIcon 
+                      title='Remove subtask'
                       alt="remove subtask"
                       width={25}
                       height={25}
@@ -170,6 +170,7 @@ export default function TodoPopup(props: TodoProps) {
                         <input value={tag} onChange={(e) => handleUpdateTag(e.target.value, index)} />
                         <button className={styles.iconButton} onClick={() => handleTagDelete(index)}>
                           <CancelIcon 
+                            title='Remove tag'
                             alt='remove tag'
                             width={20}
                             height={20}
@@ -201,6 +202,7 @@ export default function TodoPopup(props: TodoProps) {
                   onClick={() => { deleteDocument(props.todo.id, 'todo'); props.handleClose(); }}
                 >
                   <DeleteIcon 
+                    title='Delete note'
                     alt='delete note'
                     width={30}
                     height={30}

@@ -249,6 +249,12 @@
   .addButtonsContainer {
     flex-direction: column !important;
   }
+
+  .copyrightContainer {
+    flex-direction: column !important;
+    gap: 0 !important;
+    align-items: center !important;
+  }
 }
 
 /* Tablet and Smaller Desktop */
@@ -264,6 +270,20 @@
 
   .NavigationContainer {
     width: auto !important;
+  }
+
+  .copyrightContainer {
+    flex-direction: column !important;
+    gap: 0 !important;
+    align-items: center !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .copyrightContainer {
+    flex-direction: column !important;
+    gap: 0 !important;
+    align-items: center !important;
   }
 }
 
@@ -338,7 +358,7 @@
   border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.1s ease;
-  fill: #1a689f
+  fill: var(--ternaryActive);
 }
 
 .iconButton:focus {
@@ -845,3 +865,24 @@ p.todoUpdatedAt {
   height: auto;
 }
 
+.copyrightContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--ternaryActive);
+}
+
+.copyrightContainer a {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 0.3rem 0;
+}
+
+.copyrightContainer p {
+  margin-right: 1rem;
+}

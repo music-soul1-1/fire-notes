@@ -62,6 +62,7 @@ export default function Note(props: NoteProps) {
           onClick={handleDelete}
         >
           <DeleteIcon 
+            title='Delete note'
             alt='delete note'
             width={30}
             height={30}

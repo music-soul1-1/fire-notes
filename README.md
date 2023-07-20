@@ -1,39 +1,80 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# FireNotes
 
-## Getting Started
+This is a notes and to-do application. Web version (the only tested version currently) is built with [Next.js](https://nextjs.org/).
 
-First, run the development server:
+Windows version uses [Tauri](https://tauri.app/). Note that it was not tested yet.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+### [See changelog](ttps://github.com/music-soul1-1/fire-notes#changelog)
+
+## Features
+* Save your notes and tasks.
+* Cross-platform.
+* Real-time updates.
+* Storage and Authentication are provided by [Firebase](https://firebase.google.com/).
+* Hosted on [Vercel](https://vercel.com/).
+
+## Usage
+1. Open one of the following domains:
+* https://firenotes-io.vercel.app/
+* https://firenotesio.vercel.app/
+* https://fire-notes-io.vercel.app/
+* https://firenotes-s.vercel.app
+* https://fire-notes-vercel.vercel.app
+* https://fire-notes-s.vercel.app
+* https://fire-notes-hub.vercel.app
+* https://fire-notes-stable.vercel.app
+* https://fire-notes-beta.vercel.app
+
+2. Log in.
+3. You're ready to go!
+
+## Screenshots
+
+
+
+## Plans
+* Refactor the codebase.
+* Fix bugs.
+* Improve styling.
+* Enable proper server-side rendering.
+* Add features.
+* Add settings.
+* Release Windows and Android apps.
+
+## Developing
+
+### Using Docker Dev Environments (preferred way)
+
+Open
+```
+https://open.docker.com/dashboard/dev-envs?url=https://github.com/music-soul1-1/fire-notes@beta
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This will open Docker Desktop and create a new Dev Environment. After that, open it in VS Code.
+Then run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+npm install -g npm@9.8.0
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+npm i
+```
 
-## Learn More
+And 
 
-To learn more about Next.js, take a look at the following resources:
+```
+npm run dev
+```
+To start Next JS dev server. It should work on ```http://localhost:3001/```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Note that you will need `.env` file for Firebase to work. You can add a project to Firebase console, and then copy the config to `.env` (may require syntax changes). `.env` file should be placed in the root folder of the project.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Using Docker Dev Environments with Hyper-V is preferable, because that way it's not leaving garbage on the dev machine.
 
-## Deploy on Vercel
+### Old way:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
-# To run dev server:
+Clone the repo, then:
 
 ```
 docker build -t fire-notes .
@@ -45,26 +86,47 @@ then:
 docker run -p 3000:3000 -v ${PWD}:/app fire-notes
 ```
 
-## Or (if using Docker Dev Environments)
+After making changes, increase the last number in version (`v.0.1.<this>`) in `package.json` and `package-lock.json` and then create pull request.
 
-Open
-```
-https://open.docker.com/dashboard/dev-envs?url=https://github.com/music-soul1-1/fire-notes@main
-```
 
-This will open Docker Desktop and create a new Dev Environment. After that, open it in VS Code.
-Then run
-```
-npm i
-```
+## Changelog
 
-```
-npm install -g npm@9.8.0
-```
+### v.0.1.0
+* First stable release!
 
-And 
+## Dependencies
 
-```
-npm run dev
-```
-To start Next JS dev server. It should work on ```http://localhost:3001/```
+npm dependencies:
+
+* [@svgr/webpack](https://www.npmjs.com/package/@svgr/webpack): ^8.0.1
+* [@types/node](https://www.npmjs.com/package/@types/node): 20.3.1
+* [@types/react](https://www.npmjs.com/package/@types/react): 18.2.14
+* [@types/react-dom](https://www.npmjs.com/package/@types/react-dom): 18.2.6
+* [encoding](https://www.npmjs.com/package/encoding): ^0.1.13
+* [eslint](https://www.npmjs.com/package/eslint): 8.43.0
+* [eslint-config-next](https://www.npmjs.com/package/eslint-config-next): 13.4.7
+* [firebase](https://www.npmjs.com/package/firebase): ^9.23.0
+* [next](https://www.npmjs.com/package/next): 13.4.7
+* [react](https://www.npmjs.com/package/react): 18.2.0
+* [react-dom](https://www.npmjs.com/package/react-dom): 18.2.0
+* [typescript](https://www.npmjs.com/package/typescript): 5.1.3
+
+Dev Dependencies:
+
+* [@tauri-apps/api](https://www.npmjs.com/package/@tauri-apps/api): ^1.4.0
+* [@tauri-apps/cli](https://www.npmjs.com/package/@tauri-apps/cli): ^1.4.0
+
+The project also uses:
+
+* [Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons)
+* [NextJS](https://nextjs.org/)
+* [Tauri](https://tauri.app/)
+* [Firebase](https://firebase.google.com/)
+* [Vercel](https://vercel.com/)
+
+
+## License
+FireNotes is an open-source project and released under the [MIT License](https://github.com/music-soul1-1/fire-notes/blob/main/LICENSE).
+
+## Credits
+FireNotes is developed and maintained by [music-soul1-1](https://github.com/music-soul1-1/).

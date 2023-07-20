@@ -70,6 +70,7 @@ export async function signInWithGoogle() {
     const displayName = result?.user.displayName;
     const email = result?.user.email;
     const profilePic = result?.user.photoURL;
+    const domain = window.location.hostname;
 
     uid = result.user.uid;
 
@@ -85,11 +86,12 @@ export async function signInWithGoogle() {
         displayName: displayName,
         email: email,
         lastLogin: new Date(),
-        userPicUrl: profilePic
+        userPicUrl: profilePic,
+        domain: domain,
       });
     }
 
-    await updateDoc(userDocRef, {lastLogin: new Date()}); // updating last login date
+    await updateDoc(userDocRef, {lastLogin: new Date(), domain: domain}); // updating last login date
 
     localStorage.setItem("uid", uid); // TODO: change this to cookie
 
