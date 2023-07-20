@@ -1,6 +1,6 @@
 # FireNotes 
 
-<p align="center"><br><img src="https://github.com/music-soul1-1/fire-notes/assets/72669184/166739a5-4536-4da3-b81b-efd8e380c1ab" width="128" height="128" /></p>
+<p align="center"><br><img src="https://github.com/music-soul1-1/fire-notes/assets/72669184/5642a9ae-b6db-431e-bd74-8a0c702fbc32" width="128" height="128" /></p>
 <h3 align="center">FireNotes</h3>
 
 This is a notes and to-do application. Web version (the only tested version currently) is built with [Next.js](https://nextjs.org/).
@@ -33,7 +33,8 @@ Windows version uses [Tauri](https://tauri.app/). Note that it was not tested ye
 
 ## Screenshots
 
-![screenshot](https://github.com/music-soul1-1/fire-notes/assets/72669184/c490d016-0e4a-4717-a5fe-8e30674543dd)
+![screenshot](https://github.com/music-soul1-1/fire-notes/assets/72669184/bdf53cd5-0532-457e-a8f7-c229093ecf63)
+
 
 ## Plans
 * Refactor the codebase.
