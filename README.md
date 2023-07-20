@@ -94,6 +94,9 @@ After making changes, increase the last number in version (`v.0.1.<this>`) in `p
 
 ## Changelog
 
+### v.0.1.1
+* License link fix.
+
 ### v.0.1.0
 * First stable release!
 
@@ -129,7 +132,7 @@ The project also uses:
 
 
 ## License
-FireNotes is an open-source project and released under the [MIT License](https://github.com/music-soul1-1/fire-notes/blob/main/LICENSE).
+FireNotes is an open-source project and released under the [MIT License](https://github.com/music-soul1-1/fire-notes/blob/main/LICENSE.txt).
 
 ## Credits
 FireNotes is developed and maintained by [music-soul1-1](https://github.com/music-soul1-1/).

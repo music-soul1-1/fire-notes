@@ -76,7 +76,7 @@ export default function Home() {
               </a>
             </div>
             <div>
-              <a  href='https://github.com/music-soul1-1/fire-notes/blob/main/LICENSE' target='_blank'>
+              <a  href='https://github.com/music-soul1-1/fire-notes/blob/main/LICENSE.txt' target='_blank'>
                 MIT License
               </a>
             </div>
