@@ -1,9 +1,9 @@
 import firebase from "firebase/compat/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { 
-  getFirestore, collection, addDoc, doc, 
+  getFirestore, collection, doc, Timestamp,
   getDoc, setDoc, getDocs, updateDoc, 
-  onSnapshot, query, deleteDoc, arrayUnion
+  onSnapshot, query, deleteDoc, arrayUnion, orderBy
 } from "firebase/firestore";
 
 export type note = {
@@ -11,19 +11,22 @@ export type note = {
   title: string;
   content: string;
   tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  isAttached: boolean;
 };
 
 export type todo = {
   id: string;
   title: string;
-  description: string[];
+  subtask: string[];
   tags: string[];
   completed: boolean[];
-  completedAt: Date[];
-  createdAt: Date[];
-  updatedAt: Date[];
+  completedAt: Timestamp[];
+  createdAt:Timestamp;
+  updatedAt: Timestamp;
+  subtaskUpdatedAt: Timestamp[];
+  isAttached: boolean;
 };
 
 const firebaseConfig = {
@@ -33,7 +36,7 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET + "",
   messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID + "",
   appId: process.env.NEXT_PUBLIC_APP_ID + "",
-}
+};
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
@@ -63,20 +66,19 @@ export function loadUid() {
 };
 
 export async function signInWithGoogle() {
-  signInWithPopup(auth, provider).then(async (result) => {
-    console.log(result);
+  signInWithPopup(auth, provider).then(async (result) => { // TODO: change this to redirect
     const displayName = result?.user.displayName;
     const email = result?.user.email;
     const profilePic = result?.user.photoURL;
+    const domain = window.location.hostname;
 
     uid = result.user.uid;
 
 
-    const userDocRef = doc(db, "users", uid); // TODO: add check here. And change this to getToken() (probably)
+    const userDocRef = doc(db, "users", uid);
     const userDocument = await getDoc(userDocRef);
 
     const data = userDocument.data();
-    console.log(data?.email);
 
     if (uid && !userDocument.exists()) {
       await setDoc(userDocRef, {
@@ -84,17 +86,14 @@ export async function signInWithGoogle() {
         displayName: displayName,
         email: email,
         lastLogin: new Date(),
-        userPicUrl: profilePic
+        userPicUrl: profilePic,
+        domain: domain,
       });
     }
 
-    // adding test note on login:
-    //await addNote("first note", `${displayName}'s note content `);
-    
-    localStorage.setItem("displayName", displayName ?? '');
-    localStorage.setItem("email", email ?? '');
-    localStorage.setItem("profilePicLink", profilePic ?? '');
-    localStorage.setItem("uid", uid);
+    await updateDoc(userDocRef, {lastLogin: new Date(), domain: domain}); // updating last login date
+
+    localStorage.setItem("uid", uid); // TODO: change this to cookie
 
     location.reload(); // Reloading page // TODO: Remove reloading
   }).catch((error) => {
@@ -114,8 +113,9 @@ export async function addNote(title : string, content : string) {
     await setDoc(doc(collection(db, "users", uid, "notes")), <note>{
       title: title,
       content: content,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: Timestamp.fromDate(new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
+      isAttached: false
     });
   }
 };
@@ -128,23 +128,57 @@ export async function getAllNotes() {
   if (!uid) {
     uid = localStorage.getItem("uid") ?? ' ';
   }
-  const querySnapshot = await getDocs(collection(db, "users", uid, "notes"));
+  
+  const notesRef = collection(db, "users", uid, "notes");
+  const notesQuery = query(notesRef, orderBy("updatedAt", "desc"));
+  const querySnapshot = await getDocs(notesQuery);
 
   const notes = querySnapshot.docs.map((doc) => {
     const data = doc.data();
 
-    const noteData : note = {
+    const noteData: note = {
       id: doc.id,
       title: data.title,
       content: data.content,
       tags: data.tags,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
+      isAttached: data.isAttached
     };
     return noteData;
   });
 
   return notes;
+};
+
+export async function getAllTodos() {
+  if (!uid) {
+    uid = localStorage.getItem("uid") ?? ' ';
+  }
+
+  const todosRef = collection(db, "users", uid, "todos");
+  const todosQuery = query(todosRef, orderBy("updatedAt", "desc"));
+  const querySnapshot = await getDocs(todosQuery);
+
+  const todos = querySnapshot.docs.map((doc) => {
+    const data = doc.data() as todo;
+
+    const todoData: todo = {
+      id: doc.id,
+      title: data.title,
+      subtask: data.subtask,
+      tags: data.tags,
+      completed: data.completed,
+      completedAt: data.completedAt,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      subtaskUpdatedAt: data.subtaskUpdatedAt,
+      isAttached: data.isAttached
+    };
+    return todoData;
+  });
+
+  return todos;
 };
 
 export async function updateNoteContent(noteID: string, value: string) {
@@ -219,85 +253,57 @@ export async function removeTag(id: string, index: number, type: 'note' | 'todo'
       docRef = doc(db, "users", uid, "notes" , id);
       const document = await getDoc(docRef);
       docData = document.data() as note;
-  
-      if (docData) {
-        const updatedTags = [...docData.tags];
-  
-        updatedTags.splice(index, 1);
-  
-        await updateDoc(docRef, {tags: updatedTags, updatedAt: new Date()} );
-      }
     }
     else {
       docRef = doc(db, "users", uid, "todos" , id);
       const document = await getDoc(docRef);
       docData = document.data() as todo;
-  
-      if (docData) {
-        const updatedTags = [...docData.tags];
-  
-        updatedTags.splice(index, 1);
-  
-        await updateDoc(docRef, {tags: updatedTags} );
-      }
+    }
+
+    if (docData) {
+      const updatedTags = [...docData.tags];
+
+      updatedTags.splice(index, 1);
+
+      await updateDoc(docRef, {tags: updatedTags, updatedAt: new Date()} );
     }
   }
 }
 
-export async function addTodo(title: string, description: string[]) {
+export async function addTodo(title: string, subtask: string[]) {
   if (!uid) {
     uid = localStorage.getItem("uid") ?? ' ';
   }
 
-  const currentDateArr : Date[] = Array(description.length).fill(new Date());
-  const specialDateArr : Date[] = Array(description.length).fill(new Date(1, 0, 1));
+  const currentDateArr : Timestamp[] = Array(subtask.length).fill(Timestamp.fromDate(new Date()));
+  const specialDateArr : Timestamp[] = Array(subtask.length).fill(Timestamp.fromDate(new Date(1, 0, 1)));
 
   await setDoc(doc(collection(db, "users", uid, "todos")), <todo>{
     title: title,
-    description: description,
-    completed: Array(description.length).fill(false),
+    subtask: subtask,
+    completed: Array(subtask.length).fill(false),
     completedAt: specialDateArr, 
-    createdAt: currentDateArr,
-    updatedAt: currentDateArr,
+    createdAt: Timestamp.fromDate(new Date()),
+    updatedAt: Timestamp.fromDate(new Date()),
+    subtaskUpdatedAt: currentDateArr,
+    isAttached: false
   });
 };
 
-export async function getAllTodos() {
-  if (!uid) {
-    uid = localStorage.getItem("uid") ?? ' ';
-  }
-
-  const querySnapshot = await getDocs(collection(db, "users", uid, "todos"));
-
-  const todos = querySnapshot.docs.map((doc) => {
-    const data = doc.data() as todo;
-
-    const todoData : todo = {
-      id: doc.id,
-      title: data.title,
-      description: data.description,
-      tags: data.tags,
-      completed: data.completed,
-      completedAt: data.completedAt,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
-    return todoData;
-  });
-
-  return todos;
-};
-
-export async function updateTodoDescription(id: string, index: number, value: string) {
+export async function updateTodoSubtask(id: string, index: number, value: string) {
   if (uid) {
     const docRef = doc(db, "users", uid, "todos", id);
     const todoDoc = await getDoc(docRef);
     const todoData = todoDoc.data() as todo;
   
     if (todoData) {
-      const updatedDescription = todoData.description.map((desc, i) => (i === index ? value : desc));
-      const updatedUpdatedAt = todoData.updatedAt.map((upd, i) => (i === index ? new Date() : upd));
-      await updateDoc(docRef, { description: updatedDescription, updatedAt: updatedUpdatedAt });
+      const updatedSubtasks = todoData.subtask.map((desc, i) => (i === index ? value : desc));
+      const updatedDates = todoData.subtaskUpdatedAt.map((date, i) => (i === index ? Timestamp.fromDate(new Date()) : date));
+      await updateDoc(docRef, { 
+        subtask: updatedSubtasks, 
+        updatedAt: Timestamp.fromDate(new Date()), 
+        subtaskUpdatedAt: updatedDates 
+      });
     }
   }
 };
@@ -306,7 +312,7 @@ export async function updateTodoTitle(id: string, value: string) {
   if (uid) {
     const docRef = doc(db, "users", uid, "todos" , id);
 
-    await updateDoc(docRef, {title: value});
+    await updateDoc(docRef, {title: value, updatedAt: Timestamp.fromDate(new Date())});
   }
 };
 
@@ -318,14 +324,23 @@ export async function setCompleted(id: string, index: number, isCompleted: boole
   
     if (todoData) {
       const updatedState = todoData.completed.map((completed, i) => (i === index ? isCompleted : completed));
-      const updatedUpdatedAt = todoData.updatedAt.map((upd, i) => (i === index ? new Date() : upd));
+      const updatedCompleteDate = todoData.completedAt.map((comletionDate, i) => (i === index ? Timestamp.fromDate(new Date()) : comletionDate));
+      const newSubtaskUpdatedAt = todoData.subtaskUpdatedAt.map((date, i) => (i === index) ? Timestamp.fromDate(new Date()) : date);
   
       if (isCompleted) {
-        const updatedCompleteDate = todoData.completedAt.map((comletionDate, i) => (i === index ? new Date() : comletionDate));
-        await updateDoc(docRef, { completed: updatedState, updatedAt: updatedUpdatedAt, completedAt: updatedCompleteDate });
+        await updateDoc(docRef, { 
+          completed: updatedState, 
+          updatedAt: Timestamp.fromDate(new Date()), 
+          completedAt: updatedCompleteDate,
+          subtaskUpdatedAt: newSubtaskUpdatedAt
+        });
       }
       else {
-        await updateDoc(docRef, { completed: updatedState, updatedAt: updatedUpdatedAt });
+        await updateDoc(docRef, { 
+          completed: updatedState, 
+          updatedAt: Timestamp.fromDate(new Date()),
+          subtaskUpdatedAt: newSubtaskUpdatedAt
+        });
       }    
     }
   }
@@ -337,18 +352,19 @@ export async function addSubtask(id: string) {
     const document = await getDoc(docRef);
     const docData = document.data() as todo;
   
-    const newDescription = [...docData.description, ''];
-    const newCreatedAt = [...docData.createdAt, new Date()];
-    const newUpdatedAt = [...docData.updatedAt, new Date()];
+    const newSubtasks = [...docData.subtask, ''];
+    const newCreatedAt = docData.createdAt ?? Timestamp.fromDate(new Date());
     const newCompleted = [...docData.completed, false];
-    const newCompletedAt = [...docData.completedAt, new Date(1, 0, 1)];
+    const newCompletedAt = [...docData.completedAt, Timestamp.fromDate(new Date(1, 0, 1))];
+    const newSubtaskUpdatedAt = [...docData.subtaskUpdatedAt, Timestamp.fromDate(new Date())];
   
     await updateDoc(docRef, {
-      description: newDescription,
+      subtask: newSubtasks,
       createdAt: newCreatedAt,
-      updatedAt: newUpdatedAt,
+      updatedAt: Timestamp.fromDate(new Date()),
       completed: newCompleted,
       completedAt: newCompletedAt,
+      subtaskUpdatedAt: newSubtaskUpdatedAt
     });
   }
 };
@@ -360,26 +376,24 @@ export async function removeSubtask(id: string, index: number) {
     const docData = document.data() as todo;
   
     // Create new arrays
-    const newDescription = [...docData.description];
-    const newCreatedAt = [...docData.createdAt];
-    const newUpdatedAt = [...docData.updatedAt];
+    const newSubtasks = [...docData.subtask];
     const newCompleted = [...docData.completed];
     const newCompletedAt = [...docData.completedAt];
+    const newSubtaskUpdatedAt = [...docData.subtaskUpdatedAt];
   
     // Remove the subtask from the arrays using Array.splice
-    newDescription.splice(index, 1);
-    newCreatedAt.splice(index, 1);
-    newUpdatedAt.splice(index, 1);
+    newSubtasks.splice(index, 1);
     newCompleted.splice(index, 1);
     newCompletedAt.splice(index, 1);
+    newSubtaskUpdatedAt.splice(index, 1);
   
     // Update the document with the new arrays
     await updateDoc(docRef, {
-      description: newDescription,
-      createdAt: newCreatedAt,
-      updatedAt: newUpdatedAt,
+      subtask: newSubtasks,
+      updatedAt: Timestamp.fromDate(new Date()),
       completed: newCompleted,
       completedAt: newCompletedAt,
+      subtaskUpdatedAt: newSubtaskUpdatedAt
     });
   }
 };
@@ -400,7 +414,7 @@ export async function deleteDocument(id: string, type: 'todo' | 'note') {
 
 
 export const subscribeToNotesChanges = (callback: (notes: note[]) => void) => {
-  const unsubscribe = onSnapshot(query(collection(db, "users", uid ?? ' ', "notes")), (snapshot) => {
+  const unsubscribe = onSnapshot(query(collection(db, "users", uid ?? 'guest', "notes")), (snapshot) => {
     const updatedNotes: note[] = [];
     snapshot.forEach((doc) => {
       updatedNotes.push({ id: doc.id, ...doc.data() } as note);
@@ -412,7 +426,7 @@ export const subscribeToNotesChanges = (callback: (notes: note[]) => void) => {
 };
 
 export const subscribeToTodosChanges = (callback: (todos: todo[]) => void) => {
-  const unsubscribe = onSnapshot(query(collection(db, "users", uid ?? ' ', "todos")), (snapshot) => {
+  const unsubscribe = onSnapshot(query(collection(db, "users", uid ?? 'guest', "todos")), (snapshot) => {
     const updatedTodos: todo[] = [];
     snapshot.forEach((doc) => {
       updatedTodos.push({ id: doc.id, ...doc.data() } as todo);
@@ -438,3 +452,22 @@ export function clearStorage() {
     localStorage.removeItem(key);
   })
 };
+
+export async function getUserPicUrl() {
+  if (uid) {
+    const docRef = doc(db, "users", uid);
+    const userDocument = await getDoc(docRef);
+
+    const data = userDocument.data();
+
+    return <string>data?.userPicUrl;
+  }
+}
+
+export function convertTimestampToString(timestamp : Timestamp) {
+  const date = timestamp.toDate();
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const formattedDate = `${hours}:${minutes}, ${date.toLocaleDateString([], { day: 'numeric', month: 'numeric' })}`;
+  return formattedDate;
+}

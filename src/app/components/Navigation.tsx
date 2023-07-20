@@ -17,9 +17,8 @@ function NavButton(
         className={styles.NavIcon}
         width={40}
         height={40}
-        fill={isHovered ? '#B0D5F0' : '#1A5986'}
       />
-      <p>{label}</p>
+      <p className={styles.navLabel}>{label}</p>
     </button>
   );
 }

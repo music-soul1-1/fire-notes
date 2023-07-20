@@ -1,17 +1,25 @@
 import styles from '../page.module.css';
 import { useEffect, useState } from 'react';
-import { signInWithGoogle, clearStorage } from '../FirebaseHandler';
-import FireNotesLogo from './lockup.svg';
+import { signInWithGoogle, clearStorage, getUserPicUrl } from '../FirebaseHandler';
 import Image from 'next/image';
 import { AccountIcon, SettingsIcon } from '../assets/Icons';
 import Popup from './Popup';
 
 export default function Header(): JSX.Element {
   const [isSettingsPopupOpen, setSettingsPopupOpen] = useState(false);
+  const [userPicUrl, setUserPicUrl] = useState<string | undefined>();
 
   function toggleSettingsPopup() {
     setSettingsPopupOpen(!isSettingsPopupOpen);
   };
+
+  useEffect(() => {
+    async function getUserPic() {
+      const userPic = await getUserPicUrl();
+      setUserPicUrl(userPic);
+    }
+    getUserPic();
+  }, []);
 
   return (
     <header className={styles.headerContainer}>
@@ -33,17 +41,29 @@ export default function Header(): JSX.Element {
             alt='Settings'
             width={28}
             height={28}
-            className={styles.settingsLogo}
+            className={styles.settingsIcon}
           />
         </button>
         <button className={styles.iconButton}>
-          <AccountIcon
-            alt='Account pic'
-            width={50}
-            height={50}
-            className={styles.accountPic}
-            onClick={() => {signInWithGoogle()}}
-          />
+          {userPicUrl ? (
+            <Image 
+              alt='User pic'
+              unoptimized
+              src={userPicUrl ?? ''}
+              width={50}
+              height={50}
+              className={styles.accountPic}
+              onClick={() => {signInWithGoogle()}}
+            />
+          ) : (
+            <AccountIcon
+              alt='Account pic'
+              width={50}
+              height={50}
+              className={styles.accountPic}
+              onClick={() => {signInWithGoogle()}}
+            />
+          )}
         </button>
       </div>
 
