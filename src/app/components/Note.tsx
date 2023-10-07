@@ -1,11 +1,12 @@
 import React from "react";
-import {note, todo, deleteDocument, convertTimestampToString } from '../FirebaseHandler';
+import { deleteDocument, convertTimestampToString } from '../FirebaseHandler';
 import styles from '../page.module.css';
 import { DeleteIcon, TagIcon } from "../assets/Icons";
+import { Note, Todo } from '../types';
 
 export type NoteProps = {
-  note: note;
-  handleOpenPopup: (item: note | todo) => void;
+  note: Note;
+  handleOpenPopup: (item: Note | Todo) => void;
   handleClose: () => void;
 };
 

@@ -1,5 +1,5 @@
 import { 
-  getAllNotes, getAllTodos, note, todo, 
+  getAllNotes, getAllTodos, 
   addTodo, addNote, subscribeToNotesChanges, subscribeToTodosChanges, 
   loadUid,
 } from "../FirebaseHandler";
@@ -8,14 +8,15 @@ import styles from '../page.module.css';
 import Note from './Note';
 import Todo from './Todo';
 import { Timestamp } from "firebase/firestore";
+import { Note as TNote, Todo as TTodo } from "../types";
 import NotePopup from "./NotePopup";
 import TodoPopup from "./TodoPopup";
 import { NoteIcon, TodoIcon } from "../assets/Icons";
 
 export default function Main() : JSX.Element {
-  const [notes, setNotes] = useState<note[]>([]);
-  const [todos, setTodos] = useState<todo[]>([]);
-  const [selectedItem, setSelectedItem] = useState<note | todo | null>(null);
+  const [notes, setNotes] = useState<TNote[]>([]);
+  const [todos, setTodos] = useState<TTodo[]>([]);
+  const [selectedItem, setSelectedItem] = useState<TNote | TTodo | null>(null);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(()=> {
@@ -46,7 +47,7 @@ export default function Main() : JSX.Element {
   }, []);
   
   // Combine notes and todos into a single array
-  const combinedArray: (note | todo)[] = [...notes, ...todos];
+  const combinedArray: (TNote | TTodo)[] = [...notes, ...todos];
 
   // Sort the combined array by the updatedAt date in descending order
   const sortedArray = combinedArray.sort((a, b) => {
@@ -56,7 +57,7 @@ export default function Main() : JSX.Element {
   });
 
     // Function to handle opening a note or todo as a popup
-    const handleOpenPopup = (item: note | todo) => {
+    const handleOpenPopup = (item: TNote | TTodo) => {
       setSelectedItem(item);
       setShowPopup(true);
       document.body.classList.add(styles.popupOpen);
@@ -83,7 +84,7 @@ export default function Main() : JSX.Element {
           <p>Add note</p>
         </button>
 
-        <button className={styles.addButton} onClick={() => addTodo("Title", ["Todo"])}>
+        <button className={styles.addButton} onClick={() => addTodo("Title", "Todo")}>
           
           <TodoIcon 
             className={styles.NavIcon}

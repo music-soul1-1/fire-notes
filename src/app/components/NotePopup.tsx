@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  note, updateNoteTitle, updateNoteContent, addTag, 
+  updateNoteTitle, updateNoteContent, addTag, 
   updateTag, removeTag, deleteDocument 
 } from '../FirebaseHandler';
 import Popup from './Popup';

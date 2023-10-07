@@ -5,13 +5,13 @@
 
 This is a notes and to-do application. Web version (the only tested version currently) is built with [Next.js](https://nextjs.org/).
 
-Windows version uses [Tauri](https://tauri.app/). Note that it was not tested yet.
+Windows version uses [Tauri](https://tauri.app/). Note that it was not tested or built yet.
 
 ### [See changelog](https://github.com/music-soul1-1/fire-notes#changelog)
 
 ## Features
 * Save your notes and tasks.
-* Cross-platform.
+* Cross-platform (Mobile version will be available soon).
 * Real-time updates.
 * Storage and Authentication are provided by [Firebase](https://firebase.google.com/).
 * Hosted on [Vercel](https://vercel.com/).
@@ -37,10 +37,10 @@ Windows version uses [Tauri](https://tauri.app/). Note that it was not tested ye
 
 
 ## Plans
-* Refactor the codebase.
+* Refactor and optimize the codebase.
 * Fix bugs.
 * Improve styling.
-* Enable proper server-side rendering.
+* Enable server-side rendering where possible.
 * Add features.
 * Add settings.
 * Release Windows and Android apps.
@@ -94,6 +94,8 @@ After making changes, increase the last number in version (`v.0.1.<this>`) in `p
 
 
 ## Changelog
+### v.0.1.2
+* Data models updated to match the mobile version.
 
 ### v.0.1.1
 * License link fix.

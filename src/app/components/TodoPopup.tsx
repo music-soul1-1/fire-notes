@@ -7,41 +7,76 @@ import Popup from './Popup';
 import styles from '../page.module.css';
 import { TodoProps } from './Todo';
 import { DeleteIcon, TagIcon, CancelIcon, AddTagIcon, AddTaskIcon, CheckboxIconChecked, CheckboxIconOutline } from '../assets/Icons';
+import { Timestamp } from 'firebase/firestore';
 
 
 export default function TodoPopup(props: TodoProps) {
   const [subtasks, setSubtasks] = useState(props.todo.subtask);
   const [title, setTitle] = useState(props.todo.title);
   const [tags, setTags] = useState(props.todo.tags);
-  const [completed, setSubtaskCompleted] = useState(props.todo.completed);
+  const [todo, setTodo] = useState(props.todo);
+
   const titleTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-
-  const handleSubtaskChange = async (newValue: string, index: number) => {
-    const newSubtasks = subtasks.map((subtask, i) => (i === index ? newValue : subtask));
+  useEffect(() => {
+    async function updateTodoData() {
+      try {
+        const updatedTodo = { ...todo, title: title, subtask: subtasks, tags: tags };
+        //const newTodo = await updateTodo(updatedTodo);
+        setTodo(updatedTodo);
+      }
+      catch (error) {
+        console.error(error);
+      }
+    };
     
-    setSubtasks(newSubtasks);
-    await updateTodoSubtask(props.todo.id, index, newValue);
+    updateTodoData();
+  }, [title, subtasks, tags]);
+
+  const handleSubtaskCompletion = async (index: number) => {
+    const updatedSubtasks = [...subtasks];
+    updatedSubtasks[index].completed = !updatedSubtasks[index].completed;
+    setSubtasks(updatedSubtasks);
+
+    await setCompleted(todo.id, index, updatedSubtasks[index].completed);
   };
 
-  const handleAddSubtask = async (initValue: string) => {
-    if (subtasks.length >= 1) {
-      setSubtasks([...subtasks, initValue]);
+  const handleSubtaskTextChange = async (index: number, text: string) => {
+    const updatedSubtasks = [...subtasks];
+    if (updatedSubtasks[index]) {
+      updatedSubtasks[index].text = text;
+      updatedSubtasks[index].updatedAt = Timestamp.fromDate(new Date());
+      setSubtasks(updatedSubtasks);
+      await updateTodoSubtask(todo.id, index, text);
     }
-    else {
-      setSubtasks([initValue]);
+  };
+  
+  const handleSubtaskDelete = async (index: number) => {
+    const updatedSubtasks = [...subtasks];
+    if (updatedSubtasks[index]) {
+      updatedSubtasks.splice(index, 1);
+      setSubtasks(updatedSubtasks);
+      await removeSubtask(todo.id, index);
     }
-
-    await addSubtask(props.todo.id);
   };
 
-  const handleRemoveSubtask = async (index: number) => {
-    const newSubtasks = [...subtasks];
-    newSubtasks.splice(index, 1);
+  async function handleAddSubtask() {
+    const initialSubtask = {
+      text: '',
+      completed: false,
+      completedAt: Timestamp.fromDate(new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
+    };
+    const updatedSubtasks = [...subtasks, initialSubtask];
+    setSubtasks(updatedSubtasks);
 
-    setSubtasks(newSubtasks);
-    await removeSubtask(props.todo.id, index);
-  }
+    await addSubtask(todo.id, '');
+  };
+
+  async function handleDeleteTodo() {
+    await deleteDocument(todo.id, 'todo');
+  };
 
   const handleTitleChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTitle(e.target.value);
@@ -66,15 +101,6 @@ export default function TodoPopup(props: TodoProps) {
     setTags(updatedTags);
     await removeTag(props.todo.id, index, 'todo')
   };
-
-  const handleCompletionChange = async (index: number, value: boolean) => {
-    const updatedCompleted = [...completed];
-    updatedCompleted[index] = value;
-    setSubtaskCompleted(updatedCompleted);
-
-    await setCompleted(props.todo.id, index, value);
-  };
-
 
   const adjustTextareaHeight = (ref: React.RefObject<HTMLTextAreaElement>) => {
     if (ref.current) {
@@ -106,13 +132,13 @@ export default function TodoPopup(props: TodoProps) {
               {Array.isArray(subtasks) ? subtasks.map((val, index) => (
                 <div key={index} className={styles.popupSubtasksContainer}>
 
-                  <button className={styles.iconButton} onClick={() => handleCompletionChange(index, !completed[index])}>
-                    {completed[index] ? (
+                  <button className={styles.iconButton} onClick={() => handleSubtaskCompletion(index)} style={{padding: 5}}>
+                    {val.completed ? (
                         <CheckboxIconChecked 
-                        className={styles.icon}
-                        alt='checked'
-                        width={25}
-                        height={25}
+                          className={styles.icon}
+                          alt='checked'
+                          width={25}
+                          height={25}
                       />
                       
                     ) : (
@@ -127,10 +153,10 @@ export default function TodoPopup(props: TodoProps) {
                   
                   <textarea
                     key={index}
-                    value={subtasks[index]}
-                    onChange={(e) => handleSubtaskChange(e.target.value, index)}
+                    value={subtasks[index].text}
+                    onChange={(e) => handleSubtaskTextChange(index, e.target.value)}
                   />
-                  <button className={styles.iconButton} onClick={() => handleRemoveSubtask(index)}>
+                  <button className={styles.iconButton} onClick={() => handleSubtaskDelete(index)} style={{padding: 2}}>
                     <CancelIcon 
                       title='Remove subtask'
                       alt="remove subtask"
@@ -142,7 +168,7 @@ export default function TodoPopup(props: TodoProps) {
                 
               )) : null }
               <div style={{display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, marginTop: 15, justifyContent: 'center'}}>
-                <button className={styles.iconButton} onClick={() => handleAddSubtask('')}>
+                <button className={styles.iconButton} onClick={() => handleAddSubtask()}>
                   <AddTaskIcon 
                     alt="add subtask"
                     width={30}

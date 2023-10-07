@@ -1,11 +1,12 @@
 import React from "react";
-import {todo, deleteDocument, convertTimestampToString} from '../FirebaseHandler';
+import { deleteDocument, convertTimestampToString } from '../FirebaseHandler';
 import styles from '../page.module.css';
 import { CheckboxIconChecked, CheckboxIconOutline, DeleteIcon, TagIcon } from "../assets/Icons";
+import { Todo } from '../types';
 
 export type TodoProps = {
-  todo: todo;
-  handleOpenPopup: (item: todo) => void;
+  todo: Todo;
+  handleOpenPopup: (item: Todo) => void;
   handleClose: () => void;
 };
 
@@ -30,7 +31,7 @@ export default function Todo(props : TodoProps) {
         props.todo.subtask.map((val, index) => (
           <div key={index} className={styles.cardSubtaskContainer}>
             <div>
-              {props.todo.completed[index] ? 
+              {props.todo.subtask[index].completed ? 
                 <CheckboxIconChecked 
                   className={styles.icon}
                   alt='checked'
@@ -48,11 +49,11 @@ export default function Todo(props : TodoProps) {
             <div>
               <span 
                 className={styles.cardContent} 
-                style={{fontSize: props.todo.subtask[index].length >= 20 ? '0.85rem' : '1rem'}}
+                style={{fontSize: props.todo.subtask[index].text.length >= 20 ? '0.85rem' : '1rem'}}
               >
-                {props.todo.subtask[index].length >= 46
-                  ? props.todo.subtask[index].substring(0, 45) + '...'
-                  : props.todo.subtask[index]
+                {props.todo.subtask[index].text.length >= 46
+                  ? props.todo.subtask[index].text.substring(0, 45) + '...'
+                  : props.todo.subtask[index].text
                 }
               </span>
             </div>
