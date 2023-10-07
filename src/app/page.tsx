@@ -9,6 +9,7 @@ import Main from './components/Main';
 import LoginScreen from './components/LoginScreen';
 import Popup from './components/Popup';
 import { GithubLogo, FirebaseIcon, VercelLogo, NextJSLogo } from './assets/Icons';
+import { version as appVersion } from '../../package.json';
 
 export default function Home() {
   const [isLoading, setLoading] = useState(true);
@@ -79,6 +80,11 @@ export default function Home() {
               <a  href='https://github.com/music-soul1-1/fire-notes/blob/main/LICENSE.txt' target='_blank'>
                 MIT License
               </a>
+            </div>
+            <div>
+              <span>
+                v.{appVersion}
+              </span>
             </div>
           </div>
         </div>

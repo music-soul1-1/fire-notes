@@ -5,29 +5,9 @@ import {
   getDoc, setDoc, getDocs, updateDoc, 
   onSnapshot, query, deleteDoc, arrayUnion, orderBy
 } from "firebase/firestore";
+import { Note, Todo } from "./types";
+import { todo } from "node:test";
 
-export type note = {
-  id: string;
-  title: string;
-  content: string;
-  tags: string[];
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-  isAttached: boolean;
-};
-
-export type todo = {
-  id: string;
-  title: string;
-  subtask: string[];
-  tags: string[];
-  completed: boolean[];
-  completedAt: Timestamp[];
-  createdAt:Timestamp;
-  updatedAt: Timestamp;
-  subtaskUpdatedAt: Timestamp[];
-  isAttached: boolean;
-};
 
 const firebaseConfig = {
   apiKey: String(process.env.NEXT_PUBLIC_API_KEY),
@@ -110,12 +90,13 @@ export async function signInWithGoogle() {
  */
 export async function addNote(title : string, content : string) {
   if (uid) {
-    await setDoc(doc(collection(db, "users", uid, "notes")), <note>{
+    await setDoc(doc(collection(db, "users", uid, "notes")), <Note>{
       title: title,
       content: content,
+      tags: [''],
       createdAt: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date()),
-      isAttached: false
+      isPinned: false
     });
   }
 };
@@ -136,14 +117,14 @@ export async function getAllNotes() {
   const notes = querySnapshot.docs.map((doc) => {
     const data = doc.data();
 
-    const noteData: note = {
+    const noteData: Note = {
       id: doc.id,
       title: data.title,
       content: data.content,
       tags: data.tags,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
-      isAttached: data.isAttached
+      isPinned: data.isAttached
     };
     return noteData;
   });
@@ -161,19 +142,16 @@ export async function getAllTodos() {
   const querySnapshot = await getDocs(todosQuery);
 
   const todos = querySnapshot.docs.map((doc) => {
-    const data = doc.data() as todo;
+    const data = doc.data() as Todo;
 
-    const todoData: todo = {
+    const todoData: Todo = {
       id: doc.id,
       title: data.title,
       subtask: data.subtask,
       tags: data.tags,
-      completed: data.completed,
-      completedAt: data.completedAt,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
-      subtaskUpdatedAt: data.subtaskUpdatedAt,
-      isAttached: data.isAttached
+      isPinned: data.isPinned,
     };
     return todoData;
   });
@@ -220,12 +198,12 @@ export async function addTag(id: string, tag: string, type: 'note' | 'todo') {
 
 export async function updateTag(id: string, index: number, updatedTag: string, type: 'note' | 'todo') {
   if (uid) {
-    let docRef, docData : note | todo;
+    let docRef, docData : Note | Todo;
 
     if (type === 'note') {
       docRef = doc(db, "users", uid, "notes" , id);
       const document = await getDoc(docRef);
-      docData = document.data() as note;
+      docData = document.data() as Note;
 
       if (docData) {
         const updatedTags = docData.tags.map((tag, i) => (i === index ? updatedTag : tag));
@@ -235,7 +213,7 @@ export async function updateTag(id: string, index: number, updatedTag: string, t
     else {
       docRef = doc(db, "users", uid, "todos" , id);
       const document = await getDoc(docRef);
-      docData = document.data() as todo;
+      docData = document.data() as Todo;
 
       if (docData) {
         const updatedTags = docData.tags.map((tag, i) => (i === index ? updatedTag : tag));
@@ -247,17 +225,17 @@ export async function updateTag(id: string, index: number, updatedTag: string, t
 
 export async function removeTag(id: string, index: number, type: 'note' | 'todo') {
   if (uid) {
-    let docRef, docData : note | todo;
+    let docRef, docData : Note | Todo;
 
     if (type === 'note') {
       docRef = doc(db, "users", uid, "notes" , id);
       const document = await getDoc(docRef);
-      docData = document.data() as note;
+      docData = document.data() as Note;
     }
     else {
       docRef = doc(db, "users", uid, "todos" , id);
       const document = await getDoc(docRef);
-      docData = document.data() as todo;
+      docData = document.data() as Todo;
     }
 
     if (docData) {
@@ -270,23 +248,24 @@ export async function removeTag(id: string, index: number, type: 'note' | 'todo'
   }
 }
 
-export async function addTodo(title: string, subtask: string[]) {
+export async function addTodo(title: string, subtask: string) {
   if (!uid) {
     uid = localStorage.getItem("uid") ?? ' ';
   }
 
-  const currentDateArr : Timestamp[] = Array(subtask.length).fill(Timestamp.fromDate(new Date()));
-  const specialDateArr : Timestamp[] = Array(subtask.length).fill(Timestamp.fromDate(new Date(1, 0, 1)));
-
-  await setDoc(doc(collection(db, "users", uid, "todos")), <todo>{
+  await setDoc(doc(collection(db, "users", uid, "todos")), <Todo>{
     title: title,
-    subtask: subtask,
-    completed: Array(subtask.length).fill(false),
-    completedAt: specialDateArr, 
+    subtask: [{
+      text: subtask,
+      completed: false,
+      completedAt: Timestamp.fromDate(new Date(1, 0, 1)),
+      createdAt: Timestamp.fromDate(new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
+    }],
+    tags: [''],
     createdAt: Timestamp.fromDate(new Date()),
     updatedAt: Timestamp.fromDate(new Date()),
-    subtaskUpdatedAt: currentDateArr,
-    isAttached: false
+    isPinned: false,
   });
 };
 
@@ -294,16 +273,14 @@ export async function updateTodoSubtask(id: string, index: number, value: string
   if (uid) {
     const docRef = doc(db, "users", uid, "todos", id);
     const todoDoc = await getDoc(docRef);
-    const todoData = todoDoc.data() as todo;
-  
+    const todoData = todoDoc.data() as Todo;
+
     if (todoData) {
-      const updatedSubtasks = todoData.subtask.map((desc, i) => (i === index ? value : desc));
-      const updatedDates = todoData.subtaskUpdatedAt.map((date, i) => (i === index ? Timestamp.fromDate(new Date()) : date));
-      await updateDoc(docRef, { 
-        subtask: updatedSubtasks, 
-        updatedAt: Timestamp.fromDate(new Date()), 
-        subtaskUpdatedAt: updatedDates 
-      });
+      todoData.subtask[index].text = value;
+      todoData.subtask[index].updatedAt = Timestamp.fromDate(new Date());
+      todoData.updatedAt = Timestamp.fromDate(new Date());
+
+      await updateDoc(docRef, todoData);
     }
   }
 };
@@ -320,52 +297,34 @@ export async function setCompleted(id: string, index: number, isCompleted: boole
   if (uid) {
     const docRef = doc(db, "users", uid, "todos" , id);
     const todoDoc = await getDoc(docRef);
-    const todoData = todoDoc.data() as todo;
+    const todoData = todoDoc.data() as Todo;
   
     if (todoData) {
-      const updatedState = todoData.completed.map((completed, i) => (i === index ? isCompleted : completed));
-      const updatedCompleteDate = todoData.completedAt.map((comletionDate, i) => (i === index ? Timestamp.fromDate(new Date()) : comletionDate));
-      const newSubtaskUpdatedAt = todoData.subtaskUpdatedAt.map((date, i) => (i === index) ? Timestamp.fromDate(new Date()) : date);
+      todoData.subtask[index].completed = isCompleted;
+      todoData.subtask[index].completedAt = Timestamp.fromDate(new Date());
+      todoData.subtask[index].updatedAt = Timestamp.fromDate(new Date());
   
-      if (isCompleted) {
-        await updateDoc(docRef, { 
-          completed: updatedState, 
-          updatedAt: Timestamp.fromDate(new Date()), 
-          completedAt: updatedCompleteDate,
-          subtaskUpdatedAt: newSubtaskUpdatedAt
-        });
-      }
-      else {
-        await updateDoc(docRef, { 
-          completed: updatedState, 
-          updatedAt: Timestamp.fromDate(new Date()),
-          subtaskUpdatedAt: newSubtaskUpdatedAt
-        });
-      }    
+      await updateDoc(docRef, todoData); 
     }
   }
 };
 
-export async function addSubtask(id: string) {
+export async function addSubtask(id: string, text?: string) {
   if (uid) {
     const docRef = doc(db, "users", uid, "todos", id);
     const document = await getDoc(docRef);
-    const docData = document.data() as todo;
-  
-    const newSubtasks = [...docData.subtask, ''];
-    const newCreatedAt = docData.createdAt ?? Timestamp.fromDate(new Date());
-    const newCompleted = [...docData.completed, false];
-    const newCompletedAt = [...docData.completedAt, Timestamp.fromDate(new Date(1, 0, 1))];
-    const newSubtaskUpdatedAt = [...docData.subtaskUpdatedAt, Timestamp.fromDate(new Date())];
-  
-    await updateDoc(docRef, {
-      subtask: newSubtasks,
-      createdAt: newCreatedAt,
+    const docData = document.data() as Todo;
+    
+    const newSubtasks = [...docData.subtask, {
+      text: text ?? '',
+      completed: false,
+      completedAt: Timestamp.fromDate(new Date(1, 0, 1)),
+      createdAt: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date()),
-      completed: newCompleted,
-      completedAt: newCompletedAt,
-      subtaskUpdatedAt: newSubtaskUpdatedAt
-    });
+    }];
+    docData.subtask = newSubtasks;
+
+    await updateDoc(docRef, docData);
   }
 };
 
@@ -373,28 +332,13 @@ export async function removeSubtask(id: string, index: number) {
   if (uid) {
     const docRef = doc(db, "users", uid, "todos", id);
     const document = await getDoc(docRef);
-    const docData = document.data() as todo;
+    const docData = document.data() as Todo;
   
-    // Create new arrays
-    const newSubtasks = [...docData.subtask];
-    const newCompleted = [...docData.completed];
-    const newCompletedAt = [...docData.completedAt];
-    const newSubtaskUpdatedAt = [...docData.subtaskUpdatedAt];
+    // Remove the subtask from the array
+    docData.subtask.splice(index, 1);
   
-    // Remove the subtask from the arrays using Array.splice
-    newSubtasks.splice(index, 1);
-    newCompleted.splice(index, 1);
-    newCompletedAt.splice(index, 1);
-    newSubtaskUpdatedAt.splice(index, 1);
-  
-    // Update the document with the new arrays
-    await updateDoc(docRef, {
-      subtask: newSubtasks,
-      updatedAt: Timestamp.fromDate(new Date()),
-      completed: newCompleted,
-      completedAt: newCompletedAt,
-      subtaskUpdatedAt: newSubtaskUpdatedAt
-    });
+    // Update the document with the new subtasks
+    await updateDoc(docRef, docData);
   }
 };
 
@@ -413,11 +357,11 @@ export async function deleteDocument(id: string, type: 'todo' | 'note') {
 };
 
 
-export const subscribeToNotesChanges = (callback: (notes: note[]) => void) => {
+export const subscribeToNotesChanges = (callback: (notes: Note[]) => void) => {
   const unsubscribe = onSnapshot(query(collection(db, "users", uid ?? 'guest', "notes")), (snapshot) => {
-    const updatedNotes: note[] = [];
+    const updatedNotes: Note[] = [];
     snapshot.forEach((doc) => {
-      updatedNotes.push({ id: doc.id, ...doc.data() } as note);
+      updatedNotes.push({ id: doc.id, ...doc.data() } as Note);
     });
     callback(updatedNotes);
   });
@@ -425,11 +369,11 @@ export const subscribeToNotesChanges = (callback: (notes: note[]) => void) => {
   return unsubscribe; // Return the unsubscribe function
 };
 
-export const subscribeToTodosChanges = (callback: (todos: todo[]) => void) => {
+export const subscribeToTodosChanges = (callback: (todos: Todo[]) => void) => {
   const unsubscribe = onSnapshot(query(collection(db, "users", uid ?? 'guest', "todos")), (snapshot) => {
-    const updatedTodos: todo[] = [];
+    const updatedTodos: Todo[] = [];
     snapshot.forEach((doc) => {
-      updatedTodos.push({ id: doc.id, ...doc.data() } as todo);
+      updatedTodos.push({ id: doc.id, ...doc.data() } as Todo);
     });
     callback(updatedTodos);
   });
@@ -462,7 +406,7 @@ export async function getUserPicUrl() {
 
     return <string>data?.userPicUrl;
   }
-}
+};
 
 export function convertTimestampToString(timestamp : Timestamp) {
   const date = timestamp.toDate();
@@ -470,4 +414,4 @@ export function convertTimestampToString(timestamp : Timestamp) {
   const minutes = date.getMinutes().toString().padStart(2, '0');
   const formattedDate = `${hours}:${minutes}, ${date.toLocaleDateString([], { day: 'numeric', month: 'numeric' })}`;
   return formattedDate;
-}
+};
