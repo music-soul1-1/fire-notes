@@ -48,7 +48,6 @@ Windows version uses [Tauri](https://tauri.app/). Note that it was not tested or
 * Add settings.
 * Release Windows app.
 * Add offline support (for Windows version).
-* Add more log in options.
 
 ## Developing
 
@@ -130,7 +129,7 @@ npm dependencies:
 
 Dev Dependencies:
 
-* [@tauri-apps/api](https://www.npmjs.com/package/@tauri-apps/api): ^1.4.0
+* [@tauri-apps/api](https://www.npmjs.com/package/@tauri-apps/api): ^1.5.0
 * [@tauri-apps/cli](https://www.npmjs.com/package/@tauri-apps/cli): ^1.4.0
 
 The project also uses:
