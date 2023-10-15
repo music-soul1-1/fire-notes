@@ -61,6 +61,7 @@ export default function NotePopup(props: NoteProps) {
     <div key={props.note.id}>
       <Popup
         handleClose={props.handleClose}
+        minWidth={500}
         content={
           <div className={styles.notePopupContainer}>
             <textarea 
@@ -89,7 +90,10 @@ export default function NotePopup(props: NoteProps) {
                     <div key={index} className={styles.popupTagsContainer}>
                     <div style={{display: 'flex'}}>
                       <input value={tag} onChange={(e) => handleUpdateTag(e.target.value, index)} />
-                      <button className={styles.iconButton} onClick={() => handleTagDelete(index)}>
+                      <button 
+                        className={styles.iconButton}
+                        onClick={() => handleTagDelete(index)}
+                        title='Remove tag'>
                         <CancelIcon 
                           title='Remove tag'
                           alt='remove tag'
@@ -107,7 +111,8 @@ export default function NotePopup(props: NoteProps) {
 
             <div className={styles.cardButtons}>
               <button 
-                className={styles.iconButton} 
+                className={styles.iconButton}
+                title='Add tag'
                 onClick={() => handleAddTag('')}>
                 
                 <AddTagIcon 
@@ -119,6 +124,7 @@ export default function NotePopup(props: NoteProps) {
               </button>
               <button
                 className={styles.iconButton}
+                title='Delete note'
                 onClick={() => { deleteDocument(props.note.id, 'note'); props.handleClose(); }}
               >
                 <DeleteIcon 

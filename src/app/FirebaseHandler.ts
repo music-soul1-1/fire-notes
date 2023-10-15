@@ -6,7 +6,6 @@ import {
   onSnapshot, query, deleteDoc, arrayUnion, orderBy
 } from "firebase/firestore";
 import { Note, Todo } from "./types";
-import { todo } from "node:test";
 
 
 const firebaseConfig = {
@@ -54,11 +53,8 @@ export async function signInWithGoogle() {
 
     uid = result.user.uid;
 
-
     const userDocRef = doc(db, "users", uid);
     const userDocument = await getDoc(userDocRef);
-
-    const data = userDocument.data();
 
     if (uid && !userDocument.exists()) {
       await setDoc(userDocRef, {

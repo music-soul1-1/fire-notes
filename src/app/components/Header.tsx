@@ -69,6 +69,7 @@ export default function Header(): JSX.Element {
 
       {isSettingsPopupOpen &&
         <Popup 
+          minWidth={500}
           content={
             <div className={styles.popupContent}>
               <p>~Settings coming soon~</p>

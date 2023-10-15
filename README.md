@@ -3,7 +3,9 @@
 <p align="center"><br><img src="https://github.com/music-soul1-1/fire-notes/assets/72669184/5642a9ae-b6db-431e-bd74-8a0c702fbc32" width="128" height="128" /></p>
 <h3 align="center">FireNotes</h3>
 
-This is a notes and to-do application. Web version (the only tested version currently) is built with [Next.js](https://nextjs.org/).
+This is a notes and to-do application. Web version is built with [Next.js](https://nextjs.org/).
+
+Mobile version is [available](https://github.com/music-soul1-1/fire-notes-mobile) now.
 
 Windows version uses [Tauri](https://tauri.app/). Note that it was not tested or built yet.
 
@@ -11,7 +13,8 @@ Windows version uses [Tauri](https://tauri.app/). Note that it was not tested or
 
 ## Features
 * Save your notes and tasks.
-* Cross-platform (Mobile version will be available soon).
+* Cross-platform (Mobile version already [available](https://github.com/music-soul1-1/fire-notes-mobile)).
+* Fast and lightweight (Lighthouse performance score ~95).
 * Real-time updates.
 * Storage and Authentication are provided by [Firebase](https://firebase.google.com/).
 * Hosted on [Vercel](https://vercel.com/).
@@ -43,7 +46,9 @@ Windows version uses [Tauri](https://tauri.app/). Note that it was not tested or
 * Enable server-side rendering where possible.
 * Add features.
 * Add settings.
-* Release Windows and Android apps.
+* Release Windows app.
+* Add offline support (for Windows version).
+* Add more log in options.
 
 ## Developing
 
@@ -51,14 +56,14 @@ Windows version uses [Tauri](https://tauri.app/). Note that it was not tested or
 
 Open
 ```
-https://open.docker.com/dashboard/dev-envs?url=https://github.com/music-soul1-1/fire-notes@beta
+https://open.docker.com/dashboard/dev-envs?url=https://github.com/music-soul1-1/fire-notes@main
 ```
 
 This will open Docker Desktop and create a new Dev Environment. After that, open it in VS Code.
 Then run
 
 ```
-npm install -g npm@9.8.0
+npm install -g npm@latest
 ```
 
 ```
@@ -94,6 +99,9 @@ After making changes, increase the last number in version (`v.0.1.<this>`) in `p
 
 
 ## Changelog
+### v.0.1.3
+* Small styling improvements.
+
 ### v.0.1.2
 * Data models updated to match the mobile version.
 

@@ -118,6 +118,7 @@ export default function TodoPopup(props: TodoProps) {
     <div key={props.todo.id}>
       <Popup
         isTodo
+        minWidth={500}
         handleClose={props.handleClose}
         content={
           <div>
@@ -132,7 +133,9 @@ export default function TodoPopup(props: TodoProps) {
               {Array.isArray(subtasks) ? subtasks.map((val, index) => (
                 <div key={index} className={styles.popupSubtasksContainer}>
 
-                  <button className={styles.iconButton} onClick={() => handleSubtaskCompletion(index)} style={{padding: 5}}>
+                  <button 
+                    className={styles.iconButton}
+                    onClick={() => handleSubtaskCompletion(index)} style={{padding: 5}}>
                     {val.completed ? (
                         <CheckboxIconChecked 
                           className={styles.icon}
@@ -156,7 +159,11 @@ export default function TodoPopup(props: TodoProps) {
                     value={subtasks[index].text}
                     onChange={(e) => handleSubtaskTextChange(index, e.target.value)}
                   />
-                  <button className={styles.iconButton} onClick={() => handleSubtaskDelete(index)} style={{padding: 2}}>
+                  <button 
+                    className={styles.iconButton}
+                    title='Remove subtask'
+                    onClick={() => handleSubtaskDelete(index)}
+                    style={{padding: 2}}>
                     <CancelIcon 
                       title='Remove subtask'
                       alt="remove subtask"
@@ -168,7 +175,10 @@ export default function TodoPopup(props: TodoProps) {
                 
               )) : null }
               <div style={{display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, marginTop: 15, justifyContent: 'center'}}>
-                <button className={styles.iconButton} onClick={() => handleAddSubtask()}>
+                <button 
+                  className={styles.iconButton}
+                  title='Add subtask'
+                  onClick={() => handleAddSubtask()}>
                   <AddTaskIcon 
                     alt="add subtask"
                     width={30}
@@ -194,7 +204,10 @@ export default function TodoPopup(props: TodoProps) {
                       <div key={index} className={styles.popupTagsContainer}>
                       <div style={{display: 'flex'}}>
                         <input value={tag} onChange={(e) => handleUpdateTag(e.target.value, index)} />
-                        <button className={styles.iconButton} onClick={() => handleTagDelete(index)}>
+                        <button 
+                          className={styles.iconButton}
+                          title='Remove tag'
+                          onClick={() => handleTagDelete(index)}>
                           <CancelIcon 
                             title='Remove tag'
                             alt='remove tag'
@@ -213,7 +226,8 @@ export default function TodoPopup(props: TodoProps) {
 
               <div className={styles.cardButtons}>
                 <button 
-                  className={styles.iconButton} 
+                  className={styles.iconButton}
+                  title='Add tag'
                   onClick={() => handleAddTag('')}>
                   
                   <AddTagIcon 
@@ -225,6 +239,7 @@ export default function TodoPopup(props: TodoProps) {
                 </button>
                 <button
                   className={styles.iconButton}
+                  title='Delete note'
                   onClick={() => { deleteDocument(props.todo.id, 'todo'); props.handleClose(); }}
                 >
                   <DeleteIcon 

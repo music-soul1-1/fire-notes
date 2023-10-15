@@ -1,13 +1,11 @@
 import { 
   getAllNotes, getAllTodos, 
   addTodo, addNote, subscribeToNotesChanges, subscribeToTodosChanges, 
-  loadUid,
 } from "../FirebaseHandler";
 import React, { useEffect, useState } from "react";
 import styles from '../page.module.css';
 import Note from './Note';
 import Todo from './Todo';
-import { Timestamp } from "firebase/firestore";
 import { Note as TNote, Todo as TTodo } from "../types";
 import NotePopup from "./NotePopup";
 import TodoPopup from "./TodoPopup";
@@ -20,7 +18,6 @@ export default function Main() : JSX.Element {
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(()=> {
-    loadUid();
     async function loadNotes() {
       const notes = await getAllNotes();
       setNotes(notes);

@@ -255,6 +255,10 @@
     gap: 0 !important;
     align-items: center !important;
   }
+
+  .notePopupContainer textarea {
+    min-width: none !important;
+  }
 }
 
 /* Tablet and Smaller Desktop */
@@ -749,12 +753,11 @@ p.todoUpdatedAt {
   padding: 1rem 1.5rem;
   max-height: 400px; /* Set the maximum height of the popup */
   overflow-y: auto; /* Enable vertical scrolling */
-  max-width: 600px;
+  max-width: 800px;
 }
 
 .notePopupContainer input {
   font-size: large;
-  
 }
 
 .notePopupContainer textarea {
@@ -764,6 +767,7 @@ p.todoUpdatedAt {
   resize: none;
   padding: .2rem .4rem;
   width: 100%;
+  min-width: 350px;
   font-family: sans-serif;
   border: none;
   letter-spacing: 0.05rem;

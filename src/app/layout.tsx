@@ -4,8 +4,8 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Fire Notes',
-  description: 'Fire notes. Powered by Firebase.',
+  title: 'FireNotes',
+  description: 'FireNotes. Powered by Firebase.',
 }
 
 export default function RootLayout({

@@ -5,8 +5,9 @@ import { CancelIcon } from '../assets/Icons';
 export type popupProps = {
   content: JSX.Element,
   handleClose: any,
-  hideCloseButton?: true
-  isTodo?: true
+  hideCloseButton?: true,
+  isTodo?: true,
+  minWidth?: number,
 };
 
 export default function Popup(props : popupProps) {
@@ -18,9 +19,13 @@ export default function Popup(props : popupProps) {
         className={`
         ${styles.popupInnerWindow} 
         ${props.isTodo ? styles.todoPopupInnerWindow : ''}`} 
+        style={{minWidth: props.minWidth}}
       >
         {!props.hideCloseButton ? (
-          <button className={styles.popupCloseButton} onClick={props.handleClose}>
+          <button 
+            className={styles.popupCloseButton}
+            title='Close'
+            onClick={props.handleClose}>
             <CancelIcon 
               alt='Close'
               width={40}
