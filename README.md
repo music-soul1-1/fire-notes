@@ -22,6 +22,7 @@ Windows version uses [Tauri](https://tauri.app/). Note that it was not tested or
 ## Usage
 1. Open one of the following domains:
 * https://firenotes-io.vercel.app/
+* http://firenotes.pp.ua/ (this will redirect to https://firenotesio.vercel.app/)
 * https://firenotesio.vercel.app/
 * https://fire-notes-io.vercel.app/
 * https://firenotes-s.vercel.app
